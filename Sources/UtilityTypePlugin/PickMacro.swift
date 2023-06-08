@@ -14,18 +14,21 @@ public struct PickMacro: MemberMacro {
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
             let name = string.segments.first else {
-            throw malformedError
+            throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
         let _properties = arguments.dropFirst()
-        guard _properties.allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
-            throw malformedError
+        guard _properties
+            .map(\.expression)
+            .allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
+            throw CustomError.message("@Pick requires the property names to string literal. got: \(_properties)")
         }
-        let properties = _properties.compactMap { $0.as(StringLiteralExprSyntax.self) }
+        let properties = _properties
+            .map(\.expression)
+            .compactMap { $0.as(StringLiteralExprSyntax.self) }
             .flatMap { $0.segments.children(viewMode: .all) }
             .compactMap { $0.as(StringSegmentSyntax.self) }
             .flatMap { $0.tokens(viewMode: .all) }
             .map(\.text)
-
 
         switch declaration.kind {
         case .structDecl:
@@ -36,7 +39,7 @@ public struct PickMacro: MemberMacro {
             let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
             let structProperties = declaration.memberBlock.members.children(viewMode: .all)
                 .compactMap { $0.as(MemberDeclListItemSyntax.self) }
-                .compactMap { $0.as(VariableDeclSyntax.self) }
+                .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                 .compactMap { $0.bindings.as(PatternBindingListSyntax.self) }
                 .compactMap {
                     $0.children(viewMode: .all).compactMap { $0.as(PatternBindingSyntax.self) }
@@ -50,7 +53,7 @@ public struct PickMacro: MemberMacro {
                 .map(\.description).joined(separator: ", ")
 
             return [
-                "\(access)typealias \(name) = (_type: \(declaration.identifier).self, \(raw: tupleElements)",
+                "\(access)typealias \(name) = (_type: \(declaration.identifier.trimmed).Type, \(raw: tupleElements))",
             ]
         case .classDecl:
             guard let declaration = declaration.as(ClassDeclSyntax.self) else {
@@ -60,7 +63,7 @@ public struct PickMacro: MemberMacro {
             let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
             let structProperties = declaration.memberBlock.members.children(viewMode: .all)
                 .compactMap { $0.as(MemberDeclListItemSyntax.self) }
-                .compactMap { $0.as(VariableDeclSyntax.self) }
+                .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                 .compactMap { $0.bindings.as(PatternBindingListSyntax.self) }
                 .compactMap {
                     $0.children(viewMode: .all).compactMap { $0.as(PatternBindingSyntax.self) }
@@ -74,7 +77,7 @@ public struct PickMacro: MemberMacro {
                 .map(\.description).joined(separator: ", ")
 
             return [
-                "\(access)typealias \(name) = (_type: \(declaration.identifier).self, \(raw: tupleElements)",
+                "\(access)typealias \(name) = (_type: \(declaration.identifier.trimmed).Type, \(raw: tupleElements))",
             ]
         case _:
             throw CustomError.message("@Required can only be applied to a struct or class declarations.")
