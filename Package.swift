@@ -6,6 +6,10 @@ import PackageDescription
 
 let package = Package(
     name: "UtilityType",
+    platforms: [
+        .iOS(.v16),
+        .macOS(.v13),
+    ],
     products: [
         .library(
             name: "UtilityType",
@@ -15,7 +19,7 @@ let package = Package(
         .package(
             url: "https://github.com/apple/swift-syntax.git",
             branch: "main"
-        ),
+        )
     ],
     targets: [
         .macro(
