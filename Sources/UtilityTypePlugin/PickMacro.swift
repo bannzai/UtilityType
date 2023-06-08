@@ -66,7 +66,7 @@ public struct PickMacro: MemberMacro {
                          return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     }
                 }
-                .joined(separator: "\n")
+                .joined()
             let assignedToSelfPropertyStatements = targetStructProperties
                 .compactMap { structProperty in
                     structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
@@ -76,19 +76,14 @@ public struct PickMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
 
-            let decls: [DeclSyntax] = [
-                "\(access)struct \(name) {",
-                "\(access)let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self",
-                "\(raw: structRawProperties)",
-                "\(access)init(\(raw: structVariableName): \(raw: structName)) {",
-                "\(raw: assignedToSelfPropertyStatements)",
-                "}", // end init
-                "}", // end struct
-            ]
-
-            return decls
-                .map { $0.formatted() }
-                .map { $0.cast(DeclSyntax.self) }
+            let syntax = try! StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
+                DeclSyntax("\(access)let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self")
+                DeclSyntax("\(raw: structRawProperties)")
+                try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
+                    DeclSyntax("\(raw: assignedToSelfPropertyStatements)")
+                }
+            })
+            return [syntax.formatted().cast(DeclSyntax.self)]
         case .classDecl:
             guard let declaration = declaration.as(ClassDeclSyntax.self) else {
                 fatalError("Unexpected cast fail when kind == .classDecl")
