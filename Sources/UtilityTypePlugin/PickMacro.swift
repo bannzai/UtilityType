@@ -16,6 +16,7 @@ public struct PickMacro: MemberMacro {
             let name = string.segments.first else {
             throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
+
         let _properties = arguments.dropFirst()
         guard _properties
             .map(\.expression)
@@ -35,6 +36,9 @@ public struct PickMacro: MemberMacro {
             guard let declaration = declaration.as(StructDeclSyntax.self) else {
                 fatalError("Unexpected cast fail when kind == .structDecl")
             }
+
+            let structName = declaration.identifier.text
+            let structVariableName = structName.prefix(1).lowercased() + structName.suffix(structName.count - 1)
 
             let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
             let structProperties = declaration.memberBlock.members.children(viewMode: .all)
@@ -59,15 +63,12 @@ public struct PickMacro: MemberMacro {
                     return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                 }
                 .joined(separator: "\n")
-            let structInitArguments = targetStructProperties
-                .map(\.description)
-                .joined(separator: ", ")
             let assignedToSelfPropertyStatements = targetStructProperties
                 .compactMap { structProperty in
                     structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
                 }
                 .map {
-                    "self.\($0) = \($0)"
+                    "self.\($0) = \(structVariableName).\($0)"
                 }
                 .joined(separator: "\n")
 
@@ -75,7 +76,7 @@ public struct PickMacro: MemberMacro {
                 "\(access)struct \(name) {",
                 "let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self",
                 "\(raw: structRawProperties)",
-                "init(\(raw: structInitArguments)) {",
+                "init(\(raw: structVariableName): \(raw: structName)) {",
                 "\(raw: assignedToSelfPropertyStatements)",
                 "}", // end init
                 "}", // end struct
