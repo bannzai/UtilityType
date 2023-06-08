@@ -5,4 +5,5 @@ import UtilityType
 struct User {
     let id: UUID
     let name: String
+    let age: Int
 }
