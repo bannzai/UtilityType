@@ -60,7 +60,11 @@ public struct PickMacro: MemberMacro {
                 .map { structProperty in
                     let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
-                    return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                    if let access {
+                        return "\(access.description)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                    } else {
+                         return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                    }
                 }
                 .joined(separator: "\n")
             let assignedToSelfPropertyStatements = targetStructProperties
@@ -74,9 +78,9 @@ public struct PickMacro: MemberMacro {
 
             let decls: [DeclSyntax] = [
                 "\(access)struct \(name) {",
-                "let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self",
+                "\(access)let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self",
                 "\(raw: structRawProperties)",
-                "init(\(raw: structVariableName): \(raw: structName)) {",
+                "\(access)init(\(raw: structVariableName): \(raw: structName)) {",
                 "\(raw: assignedToSelfPropertyStatements)",
                 "}", // end init
                 "}", // end struct

@@ -2,7 +2,7 @@ import Foundation
 import UtilityType
 
 @Pick("Picked", properties: "id", "name")
-struct User {
+public struct User {
     let id: UUID
     let name: String
     let age: Int
