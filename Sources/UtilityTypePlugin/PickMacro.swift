@@ -42,18 +42,32 @@ public struct PickMacro: MemberMacro {
                 .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                 .compactMap { $0.bindings.as(PatternBindingListSyntax.self) }
                 .compactMap {
-                    $0.children(viewMode: .all).compactMap { $0.as(PatternBindingSyntax.self) }
+                    $0.children(viewMode: .all)
+                        .compactMap { $0.as(PatternBindingSyntax.self) }
                 }
                 .flatMap { $0 }
-            let structRawProperties = structProperties
+
+            let targetStructProperties = structProperties
                 .filter { structProperty in
                     properties.contains { property in
                         structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text == property
                     }}
+            let structRawProperties = targetStructProperties
                 .map { structProperty in
-                    let variableDecl =  structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
+                    let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
                     return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                }
+                .joined(separator: "\n")
+            let structInitArguments = targetStructProperties
+                .map(\.description)
+                .joined(separator: ", ")
+            let assignedToSelfPropertyStatements = targetStructProperties
+                .compactMap { structProperty in
+                    structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
+                }
+                .map {
+                    "self.\($0) = \($0)"
                 }
                 .joined(separator: "\n")
 
@@ -61,7 +75,10 @@ public struct PickMacro: MemberMacro {
                 "\(access)struct \(name) {",
                 "let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self",
                 "\(raw: structRawProperties)",
-                "}",
+                "init(\(raw: structInitArguments)) {",
+                "\(raw: assignedToSelfPropertyStatements)",
+                "}", // end init
+                "}", // end struct
             ]
 
             return decls
