@@ -27,13 +27,11 @@ let package = Package(
                 .product(name: "SwiftParser", package: "swift-syntax"),
                 .product(name: "SwiftParserDiagnostics", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-            ],
-            path: "UtilityTypePlugin"
+            ]
         ),
         .target(
             name: "UtilityType",
-            dependencies: ["UtilityTypePlugin"],
-            path: "UtilityType"
+            dependencies: ["UtilityTypePlugin"]
         ),
         .testTarget(
             name: "UtilityTypeTests",
