@@ -4,4 +4,4 @@
 import Foundation
 
 @attached(member)
-public macro Pick(typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
+public macro Pick(_ typename: String, properties: String...) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
