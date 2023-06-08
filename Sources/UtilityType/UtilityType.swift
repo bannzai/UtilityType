@@ -1,6 +1,7 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 
-import UtilityType
+import Foundation
 
-print("Hello")
+@attached(member)
+public macro Pick(typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
