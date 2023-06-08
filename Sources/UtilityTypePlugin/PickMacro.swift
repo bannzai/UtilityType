@@ -45,16 +45,28 @@ public struct PickMacro: MemberMacro {
                     $0.children(viewMode: .all).compactMap { $0.as(PatternBindingSyntax.self) }
                 }
                 .flatMap { $0 }
-            let tupleElements = structProperties
+            let structRawProperties = structProperties
                 .filter { structProperty in
                     properties.contains { property in
                         structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text == property
                     }}
-                .map(\.description).joined(separator: ", ")
+                .map { structProperty in
+                    let variableDecl =  structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
+                    let letOrVar = variableDecl.bindingKeyword.text
+                    return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                }
+                .joined(separator: "\n")
 
-            return [
-                "\(access)typealias \(name) = (_type: \(declaration.identifier.trimmed).Type, \(raw: tupleElements))",
+            let decls: [DeclSyntax] = [
+                "\(access)struct \(name) {",
+                "let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self",
+                "\(raw: structRawProperties)",
+                "}",
             ]
+
+            return decls
+                .map { $0.formatted() }
+                .map { $0.cast(DeclSyntax.self) }
         case .classDecl:
             guard let declaration = declaration.as(ClassDeclSyntax.self) else {
                 fatalError("Unexpected cast fail when kind == .classDecl")
