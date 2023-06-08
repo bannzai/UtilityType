@@ -2,7 +2,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxBuilder
 
-public struct RequiredMacro: MemberMacro {
+public struct PickMacro: MemberMacro {
     public static func expansion<Declaration, Context>(
         of node: AttributeSyntax,
         providingMembersOf declaration: Declaration,
