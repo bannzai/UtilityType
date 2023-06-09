@@ -48,6 +48,7 @@ public struct PickMacro: MemberMacro {
                 .compactMap {
                     $0.children(viewMode: .all)
                         .compactMap { $0.as(PatternBindingSyntax.self) }
+                        .filter { $0.accessor == nil }
                 }
                 .flatMap { $0 }
 
