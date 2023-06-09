@@ -16,7 +16,7 @@ public struct PickMacro: MemberMacro {
             let name = string.segments.first else {
             throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
-
+        
         let _properties = arguments.dropFirst()
         guard _properties
             .map(\.expression)
@@ -30,16 +30,16 @@ public struct PickMacro: MemberMacro {
             .compactMap { $0.as(StringSegmentSyntax.self) }
             .flatMap { $0.tokens(viewMode: .all) }
             .map(\.text)
-
+        
         switch declaration.kind {
         case .structDecl:
             guard let declaration = declaration.as(StructDeclSyntax.self) else {
                 fatalError("Unexpected cast fail when kind == .structDecl")
             }
-
+            
             let structName = declaration.identifier.text
             let structVariableName = structName.prefix(1).lowercased() + structName.suffix(structName.count - 1)
-
+            
             let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
             let structProperties = declaration.memberBlock.members.children(viewMode: .all)
                 .compactMap { $0.as(MemberDeclListItemSyntax.self) }
@@ -50,7 +50,7 @@ public struct PickMacro: MemberMacro {
                         .compactMap { $0.as(PatternBindingSyntax.self) }
                 }
                 .flatMap { $0 }
-
+            
             let targetStructProperties = structProperties
                 .filter { structProperty in
                     properties.contains { property in
@@ -63,7 +63,7 @@ public struct PickMacro: MemberMacro {
                     if let access {
                         return "\(access.description)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     } else {
-                         return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+                        return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                     }
                 }
                 .joined()
@@ -86,7 +86,7 @@ public struct PickMacro: MemberMacro {
                     "self.\($0) = \($0)"
                 }
                 .joined(separator: "\n")
-
+            
             let syntax = try! StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
@@ -101,10 +101,10 @@ public struct PickMacro: MemberMacro {
             guard let declaration = declaration.as(ClassDeclSyntax.self) else {
                 fatalError("Unexpected cast fail when kind == .classDecl")
             }
-
+            
             let className = declaration.identifier.text
             let classVariableName = className.prefix(1).lowercased() + className.suffix(className.count - 1)
-
+            
             let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
             let classProperties = declaration.memberBlock.members.children(viewMode: .all)
                 .compactMap { $0.as(MemberDeclListItemSyntax.self) }
@@ -115,7 +115,7 @@ public struct PickMacro: MemberMacro {
                         .compactMap { $0.as(PatternBindingSyntax.self) }
                 }
                 .flatMap { $0 }
-
+            
             let targetClassProperties = classProperties
                 .filter { classProperty in
                     properties.contains { property in
@@ -151,7 +151,7 @@ public struct PickMacro: MemberMacro {
                     "self.\($0) = \($0)"
                 }
                 .joined(separator: "\n")
-
+            
             let syntax = try! ClassDeclSyntax("\(access)class \(name)", membersBuilder: {
                 DeclSyntax("\(raw: classRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: classVariableName): \(raw: className))") {
@@ -166,27 +166,5 @@ public struct PickMacro: MemberMacro {
             throw CustomError.message("@Required can only be applied to a struct or class declarations.")
         }
     }
-
-    private static var malformedError: Error {
-        CustomError.message(#"@Pick requires the raw type and property name, in the form @Pick("PickTypeName", "id", "name")"#)
-    }
-
 }
 
-extension DeclModifierSyntax {
-    var isNeededAccessLevelModifier: Bool {
-        switch self.name.tokenKind {
-        case .keyword(.public): return true
-        default: return false
-        }
-    }
-}
-
-extension SyntaxStringInterpolation {
-    // It would be nice for SwiftSyntaxBuilder to provide this out-of-the-box.
-    mutating func appendInterpolation<Node: SyntaxProtocol>(_ node: Node?) {
-        if let node {
-            appendInterpolation(node)
-        }
-    }
-}
