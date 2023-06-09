@@ -5,3 +5,6 @@ import Foundation
 
 @attached(member, names: arbitrary)
 public macro Pick(_ typename: String, properties: String...) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
+
+@attached(member, names: arbitrary)
+public macro Pick2(_ typename: String, properties: String...) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
