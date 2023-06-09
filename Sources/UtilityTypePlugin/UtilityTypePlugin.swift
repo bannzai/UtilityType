@@ -6,6 +6,7 @@ import SwiftSyntaxMacros
 struct UtilityTypePlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         PickMacro.self,
+        RequiredMacro.self,
     ]
 }
 #endif
