@@ -1,8 +1,7 @@
 import Foundation
 import UtilityType
 
-@Pick("Picked", properties: "id", "name")
-@Pick("Picked2", properties: "name", "age")
+@Pick("Picked", properties: \User.id, \User.name)
 public struct User {
     let id: UUID
     let name: String
