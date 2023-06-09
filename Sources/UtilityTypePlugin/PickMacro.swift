@@ -67,7 +67,7 @@ public struct PickMacro: MemberMacro {
                     }
                 }
                 .joined()
-            let assignedToSelfPropertyStatements = targetStructProperties
+            let assignedToSelfPropertyStatementsFromDeclaration = targetStructProperties
                 .compactMap { structProperty in
                     structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
                 }
@@ -75,11 +75,25 @@ public struct PickMacro: MemberMacro {
                     "self.\($0) = \(structVariableName).\($0)"
                 }
                 .joined(separator: "\n")
+            let eachInitArgument = targetStructProperties
+                .map(\.description)
+                .joined(separator: ", ")
+            let assignedToSelfPropertyStatementsFromRawProperty = targetStructProperties
+                .compactMap { structProperty in
+                    structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
+                }
+                .map {
+                    "self.\($0) = \($0)"
+                }
+                .joined(separator: "\n")
 
             let syntax = try! StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
-                    DeclSyntax("\(raw: assignedToSelfPropertyStatements)")
+                    DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
+                }
+                try InitializerDeclSyntax("\(access)init(\(raw: eachInitArgument))") {
+                    DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromRawProperty)")
                 }
             })
             return [syntax.formatted().cast(DeclSyntax.self)]
