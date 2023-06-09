@@ -14,20 +14,20 @@ public struct PickMacro: MemberMacro {
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
             let name = string.segments.first else {
-            throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", \.id, \.name)"#)
+            throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
 
         let _properties = arguments.dropFirst()
         guard _properties
             .map(\.expression)
-            .allSatisfy({ $0.is(KeyPathExprSyntax.self) }) else {
-            throw CustomError.message("@Pick requires the property names to keyPath literal. got: \(_properties)")
+            .allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
+            throw CustomError.message("@Pick requires the property names to string literal. got: \(_properties)")
         }
         let properties = _properties
             .map(\.expression)
-            .compactMap { $0.as(KeyPathExprSyntax.self) }
-            .flatMap { $0.components.children(viewMode: .all) }
-            .compactMap { $0.as(KeyPathComponentSyntax.self) }
+            .compactMap { $0.as(StringLiteralExprSyntax.self) }
+            .flatMap { $0.segments.children(viewMode: .all) }
+            .compactMap { $0.as(StringSegmentSyntax.self) }
             .flatMap { $0.tokens(viewMode: .all) }
             .map(\.text)
 

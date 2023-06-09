@@ -4,4 +4,4 @@
 import Foundation
 
 @attached(member, names: arbitrary)
-public macro Pick<T, each U>(_ typename: String, properties: repeat KeyPath<T, each U>) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
+public macro Pick(_ typename: String, properties: String...) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
