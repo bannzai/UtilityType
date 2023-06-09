@@ -77,7 +77,6 @@ public struct PickMacro: MemberMacro {
                 .joined(separator: "\n")
 
             let syntax = try! StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
-                DeclSyntax("\(access)let _type: \(declaration.identifier.trimmed).Type = \(declaration.identifier.trimmed).self")
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatements)")
