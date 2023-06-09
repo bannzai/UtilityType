@@ -31,14 +31,17 @@ public struct RequiredMacro: MemberMacro {
                 .flatMap { $0 }
 
             let structRawProperties = structProperties
-                .map { structProperty in
+                .map { _structProperty in
+                    var structProperty = _structProperty
                     let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
                     let letOrVar = variableDecl.bindingKeyword.text
-                    if let access {
-                        return "\(access.description)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
-                    } else {
-                        return "\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
+
+                    let propertyType = structProperty.typeAnnotation?.type
+                    if let propertyType, let optionalProperty = propertyType.as(OptionalTypeSyntax.self) {
+                        structProperty = structProperty.with(\.typeAnnotation!.type, optionalProperty.wrappedType)
                     }
+
+                    return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                 }
                 .joined()
             let assignedToSelfPropertyStatementsFromDeclaration = structProperties
