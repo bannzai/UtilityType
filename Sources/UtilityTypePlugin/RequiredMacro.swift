@@ -30,32 +30,45 @@ public struct RequiredMacro: MemberMacro {
                 }
                 .flatMap { $0 }
 
-            let structRawProperties = structProperties
+            let requiredStructProperties = structProperties
                 .map { _structProperty in
                     var structProperty = _structProperty
-                    let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
-                    let letOrVar = variableDecl.bindingKeyword.text
 
                     let propertyType = structProperty.typeAnnotation?.type
                     if let propertyType, let optionalProperty = propertyType.as(OptionalTypeSyntax.self) {
                         structProperty = structProperty.with(\.typeAnnotation!.type, optionalProperty.wrappedType)
                     }
 
+                    return structProperty
+                }
+
+            let structRawProperties = requiredStructProperties
+                .map { structProperty in
+                    let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
+                    let letOrVar = variableDecl.bindingKeyword.text
                     return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(structProperty)"
                 }
                 .joined()
             let assignedToSelfPropertyStatementsFromDeclaration = structProperties
-                .compactMap { structProperty in
-                    structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
+                .compactMap { structProperty -> (selfProperty: String, declarationProperty: String)? in
+                    guard let property = structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text else {
+                        return nil
+                    }
+
+                    if let structPropertyType = structProperty.typeAnnotation?.type, structPropertyType.is(OptionalTypeSyntax.self) {
+                        return (selfProperty: property, declarationProperty: property + "!")
+                    } else {
+                        return (selfProperty: property, declarationProperty: property)
+                    }
                 }
-                .map {
-                    "self.\($0) = \(structVariableName).\($0)"
+                .map { (selfProperty, declarationProperty) in
+                    return "self.\(selfProperty) = \(structVariableName).\(declarationProperty)"
                 }
                 .joined(separator: "\n")
-            let eachInitArgument = structProperties
+            let eachInitArgument = requiredStructProperties
                 .map(\.description)
                 .joined(separator: ", ")
-            let assignedToSelfPropertyStatementsFromRawProperty = structProperties
+            let assignedToSelfPropertyStatementsFromRawProperty = requiredStructProperties
                 .compactMap { structProperty in
                     structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
                 }
