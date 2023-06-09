@@ -20,3 +20,11 @@ extension SyntaxStringInterpolation {
         }
     }
 }
+
+extension String.StringInterpolation {
+    mutating func appendInterpolation<Node: SyntaxProtocol>(_ node: Node?) {
+        if let node {
+            appendInterpolation(node)
+        }
+    }
+}
