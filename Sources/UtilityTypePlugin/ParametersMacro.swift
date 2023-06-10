@@ -9,13 +9,12 @@ public struct ParametersMacro: PeerMacro {
         in context: Context
     ) throws -> [DeclSyntax] where Context : MacroExpansionContext, Declaration : DeclSyntaxProtocol {
         guard
-            case .argumentList(let arguments) = node.argument,
-            arguments.count >= 2,
+            case .argumentList(let arguments) = node.argument, arguments.count > 0,
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
             let name = string.segments.first 
         else {
-            throw CustomError.message(#"@Parameters requires the raw type and property names, in the form @Parameters("PickTypeName", "one", "two")"#)
+            throw CustomError.message(#"@Parameters requires the raw type and property names, in the form @Parameters("PickTypeName")"#)
         }
 
         guard let funcDecl = declaration.as(FunctionDeclSyntax.self) else {
