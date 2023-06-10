@@ -8,6 +8,7 @@ struct UtilityTypePlugin: CompilerPlugin {
         PickMacro.self,
         RequiredMacro.self,
         ExcludeMacro.self,
+        ParametersMacro.self,
     ]
 }
 #endif
