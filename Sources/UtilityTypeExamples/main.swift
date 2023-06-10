@@ -1,13 +1,16 @@
 import Foundation
 import UtilityType
 
-@Exclude("ExlcudedThree", exlcudes: "three")
+@Exclude("ExcludedThree", exlcudes: "three")
 public enum E {
     case one
     case two(Int)
     case three(String, Int)
     case four(a: String, b: Int)
 }
+
+let testEnum = E.four(a: "value", b: 10)
+let textEnumExclude = E.ExcludedThree(testEnum)
 
 @Pick("Picked", properties: "id", "name")
 @Pick("Picked2", properties: "name", "age")

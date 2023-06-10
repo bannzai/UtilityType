@@ -58,7 +58,7 @@ public struct ExcludeMacro: MemberMacro {
                         )
                     }
                 )
-                try InitializerDeclSyntax("\(access) init?(\(uniqueVariableName): \(typeName))") {
+                try InitializerDeclSyntax("\(access) init?(_ \(uniqueVariableName): \(typeName))") {
                     try CodeBlockItemListSyntax {
                         try SwitchExprSyntax("switch \(uniqueVariableName)") {
                             SwitchCaseListSyntax(try excludedCases.map {
