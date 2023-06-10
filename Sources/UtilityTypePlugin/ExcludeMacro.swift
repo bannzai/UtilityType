@@ -46,6 +46,7 @@ public struct ExcludeMacro: MemberMacro {
         let syntax = try EnumDeclSyntax(
             "\(access)enum \(name)",
             membersBuilder: {
+                // case .one(Int)
                 MemberDeclListSyntax(
                     excludedCases.map { excludedCase in
                         MemberDeclListItemSyntax(
@@ -71,6 +72,7 @@ public struct ExcludeMacro: MemberMacro {
                                             SwitchCaseLabelSyntax(
                                                 caseItems: CaseItemListSyntax(itemsBuilder: {
                                                     if let parameters {
+                                                        // case .one(let param1):
                                                         CaseItemSyntax(
                                                             pattern: ExpressionPatternSyntax(
                                                                 expression: FunctionCallExprSyntax(
@@ -93,7 +95,7 @@ public struct ExcludeMacro: MemberMacro {
                                                                                         )
                                                                                     )
                                                                                 ),
-                                                                                trailingComma: index + 1 == parameters.count ? nil : ","
+                                                                                trailingComma: index + 1 == parameters.count ? nil : .commaToken()
                                                                             )
                                                                         }
                                                                     ),
@@ -102,6 +104,7 @@ public struct ExcludeMacro: MemberMacro {
                                                             )
                                                         )
                                                     } else {
+                                                        // case .one:
                                                         CaseItemSyntax(
                                                             pattern: ExpressionPatternSyntax(
                                                                 expression: MemberAccessExprSyntax(
@@ -115,6 +118,7 @@ public struct ExcludeMacro: MemberMacro {
                                         ),
                                         statements: try CodeBlockItemListSyntax(itemsBuilder: {
                                             if let parameters {
+                                                // self = .one(param1)
                                                 try CodeBlockItemSyntax(
                                                     item: .expr(
                                                         SequenceExprSyntax(
@@ -133,9 +137,9 @@ public struct ExcludeMacro: MemberMacro {
                                                                             parameters.enumerated().map { (index, parameter: EnumCaseParameterListSyntax.Element) in
                                                                                 TupleExprElementSyntax(
                                                                                     label: parameter.firstName,
-                                                                                    colon: parameter.firstName != nil ? ":" : nil,
+                                                                                    colon: parameter.firstName != nil ? .colonToken() : nil,
                                                                                     expression: IdentifierExprSyntax(identifier: TokenSyntax(stringLiteral: "param\(index)")),
-                                                                                    trailingComma: index + 1 == parameters.count ? nil : ","
+                                                                                    trailingComma: index + 1 == parameters.count ? nil : .commaToken()
                                                                                 )
                                                                             }
                                                                         ),
@@ -147,6 +151,7 @@ public struct ExcludeMacro: MemberMacro {
                                                     )
                                                 )
                                             } else {
+                                                // self = .one
                                                 CodeBlockItemSyntax(
                                                     item: .expr(
                                                         try SequenceExprSyntax(
@@ -166,7 +171,20 @@ public struct ExcludeMacro: MemberMacro {
                                         })
                                     )
                                 )
-                            })
+                            } + [
+                                .switchCase(
+                                    try SwitchCaseSyntax(
+                                        label: .default(.init()),
+                                        statements: CodeBlockItemListSyntax([
+                                            CodeBlockItemSyntax(
+                                                item: .stmt(ReturnStmtSyntax(
+                                                    expression: NilLiteralExprSyntax()
+                                                ).tryCast(StmtSyntax.self))
+                                            )
+                                        ])
+                                    )
+                                )
+                            ])
                         }
                     }
                 }
