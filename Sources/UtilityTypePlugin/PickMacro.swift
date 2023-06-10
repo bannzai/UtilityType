@@ -13,7 +13,8 @@ public struct PickMacro: MemberMacro {
             arguments.count >= 2,
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
-            let name = string.segments.first else {
+            let name = string.segments.first
+        else {
             throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
         
@@ -87,7 +88,7 @@ public struct PickMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
             
-            let syntax = try! StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
+            let syntax = try StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
@@ -152,7 +153,7 @@ public struct PickMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
             
-            let syntax = try! ClassDeclSyntax("\(access)class \(name)", membersBuilder: {
+            let syntax = try ClassDeclSyntax("\(access)class \(name)", membersBuilder: {
                 DeclSyntax("\(raw: classRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: classVariableName): \(raw: className))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")

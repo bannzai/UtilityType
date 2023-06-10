@@ -28,3 +28,36 @@ extension String.StringInterpolation {
         }
     }
 }
+
+extension EnumDeclSyntax {
+    var cases: [EnumCaseElementSyntax] {
+        memberBlock.members.flatMap { member in
+            guard let caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else {
+                return Array<EnumCaseElementSyntax>()
+            }
+
+            return Array(caseDecl.elements)
+        }
+    }
+}
+
+extension SyntaxProtocol {
+  func tryCast<S: SyntaxProtocol>(_ syntaxType: S.Type) throws -> S {
+      if let t = self.as(S.self) {
+          return t
+      } else {
+          throw CustomError.message("Cast fail to \(syntaxType) from \(self)")
+      }
+  }
+}
+
+extension Optional {
+    func tryUnwrap() throws -> Wrapped {
+        switch self {
+        case .some(let value):
+            return value
+        case .none:
+            throw CustomError.message("Unwrap fail for \(Self.self)")
+        }
+    }
+}

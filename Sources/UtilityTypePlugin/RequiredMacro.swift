@@ -77,7 +77,7 @@ public struct RequiredMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
 
-            let syntax = try! StructDeclSyntax("\(access)struct Required", membersBuilder: {
+            let syntax = try StructDeclSyntax("\(access)struct Required", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
