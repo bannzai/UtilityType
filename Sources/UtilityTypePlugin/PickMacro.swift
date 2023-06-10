@@ -13,7 +13,8 @@ public struct PickMacro: MemberMacro {
             arguments.count >= 2,
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
             string.segments.count == 1,
-            let name = string.segments.first else {
+            let name = string.segments.first
+        else {
             throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
         

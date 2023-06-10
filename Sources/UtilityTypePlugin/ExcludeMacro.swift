@@ -12,7 +12,8 @@ public struct ExcludeMacro: MemberMacro {
             case .argumentList(let arguments) = node.argument,
             arguments.count >= 2,
             let string = arguments.first?.expression.as(StringLiteralExprSyntax.self),
-            string.segments.count == 1
+            string.segments.count == 1,
+            let name = string.segments.first 
         else {
             throw CustomError.message(#"@Exclude requires the raw type and property names, in the form @Exclude("PickTypeName", "one", "two")"#)
         }
@@ -43,7 +44,7 @@ public struct ExcludeMacro: MemberMacro {
         }
 
         let syntax = try EnumDeclSyntax(
-            "\(access)enum \(typeName)",
+            "\(access)enum \(name)",
             membersBuilder: {
                 MemberDeclListSyntax(
                     excludedCases.map { excludedCase in
