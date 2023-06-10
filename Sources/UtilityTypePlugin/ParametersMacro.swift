@@ -37,7 +37,7 @@ public struct ParametersMacro: PeerMacro {
 
         return [try TypealiasDeclSyntax(
             modifiers: ModifierListSyntax(access != nil ? [access!] : []),
-            identifier: TokenSyntax(name).tryUnwrap(),
+            identifier: TokenSyntax(stringLiteral: try name.text),
             initializer: TypeInitializerClauseSyntax(
                 value:
                     TupleTypeSyntax(

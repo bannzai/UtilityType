@@ -61,3 +61,16 @@ extension Optional {
         }
     }
 }
+
+extension StringLiteralSegmentsSyntax.Element {
+    var text: String {
+        get throws {
+            switch self {
+            case .stringSegment(let stringSyntax):
+                return stringSyntax.content.text
+            case .expressionSegment(_):
+                throw CustomError.message("StringLiteralSegmentsSyntax.Element necessary stringSegment")
+            }
+        }
+    }
+}
