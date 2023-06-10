@@ -1,6 +1,8 @@
 import Foundation
 import UtilityType
 
+typealias Tuple = (a: Int, b: String, c: () -> Void)
+
 @Exclude("ExcludedThree", exlcudes: "three")
 public enum E {
     case one

@@ -97,7 +97,7 @@ public struct PickMacro: MemberMacro {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromRawProperty)")
                 }
             })
-            return [syntax.formatted().cast(DeclSyntax.self)]
+            return [syntax.cast(DeclSyntax.self)]
         case .classDecl:
             guard let declaration = declaration.as(ClassDeclSyntax.self) else {
                 fatalError("Unexpected cast fail when kind == .classDecl")
@@ -162,7 +162,7 @@ public struct PickMacro: MemberMacro {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromRawProperty)")
                 }
             })
-            return [syntax.formatted().cast(DeclSyntax.self)]
+            return [syntax.cast(DeclSyntax.self)]
         case _:
             throw CustomError.message("@Required can only be applied to a struct or class declarations.")
         }
