@@ -52,12 +52,12 @@ extension SyntaxProtocol {
 }
 
 extension Optional {
-    func tryUnwrap() throws -> Wrapped {
+    func tryUnwrap(file: StaticString = #file, function: StaticString = #function, line: Int = #line) throws -> Wrapped {
         switch self {
         case .some(let value):
             return value
         case .none:
-            throw CustomError.message("Unwrap fail for \(Self.self)")
+            throw CustomError.message("Unwrap fail for \(Self.self). file: \(file), function: \(function), line: \(line)")
         }
     }
 }

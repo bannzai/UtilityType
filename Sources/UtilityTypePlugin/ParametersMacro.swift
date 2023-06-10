@@ -23,13 +23,15 @@ public struct ParametersMacro: PeerMacro {
 
         let access = funcDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
 
-        let parameters = funcDecl.signature.input.children(viewMode: .all)
+        let parameters = funcDecl.signature.input.parameterList.children(viewMode: .all)
             .compactMap { $0.as(FunctionParameterSyntax.self) }
             .map { functionParameter in
-
                 if let attributedFunctionParameter = functionParameter.type.as(AttributedTypeSyntax.self) {
                     // for c: @escaping () -> Void
-                    return FunctionParameterSyntax(attributedFunctionParameter.baseType)
+                    return FunctionParameterSyntax(
+                        firstName: functionParameter.firstName,
+                        type: attributedFunctionParameter.baseType
+                    )
                 } else {
                     return functionParameter
                 }
@@ -41,10 +43,8 @@ public struct ParametersMacro: PeerMacro {
             initializer: TypeInitializerClauseSyntax(
                 value:
                     TupleTypeSyntax(
-                        elements: TupleTypeElementListSyntax(parameters.compactMap {
-                            $0?.as(
-                                TupleTypeElementSyntax.self
-                            )
+                        elements: TupleTypeElementListSyntax(parameters.compactMap { parameter in
+                            TupleTypeElementSyntax(type: parameter.type)
                         })
                     )
             )
