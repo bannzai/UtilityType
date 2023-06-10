@@ -33,7 +33,7 @@ public struct ExcludeMacro: MemberMacro {
             .map(\.text)
 
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
-            throw CustomError.message(#"@Exclude requires the raw type and property names, in the form @Exclude("PickTypeName", "one", "two")"#)
+            throw CustomError.message(#"@Exclude should attach to Enum)"#)
         }
 
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
@@ -190,6 +190,6 @@ public struct ExcludeMacro: MemberMacro {
                 }
             })
 
-        return [syntax.formatted().cast(DeclSyntax.self)]
+        return [syntax.cast(DeclSyntax.self)]
     }
 }
