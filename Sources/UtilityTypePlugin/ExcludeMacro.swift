@@ -37,9 +37,9 @@ public struct ExcludeMacro: MemberMacro {
 
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
         let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
-        let uniqueVariableName = context.makeUniqueName("ExcludeMacro.Enum")
+        let uniqueVariableName = context.makeUniqueName("enumType")
         let excludedCases = enumDecl.cases.filter { enumCase in
-            cases.contains { c in enumCase.identifier.text == c }
+            !cases.contains { c in enumCase.identifier.text == c }
         }
 
         let syntax = try EnumDeclSyntax(
@@ -56,7 +56,7 @@ public struct ExcludeMacro: MemberMacro {
                         )
                     }
                 )
-                try InitializerDeclSyntax("\(access) init?(\(uniqueVariableName): \(typeName)") {
+                try InitializerDeclSyntax("\(access) init?(\(uniqueVariableName): \(typeName))") {
                     try CodeBlockItemListSyntax {
                         try SwitchExprSyntax("switch \(uniqueVariableName)") {
                             SwitchCaseListSyntax(try excludedCases.map {
@@ -76,8 +76,9 @@ public struct ExcludeMacro: MemberMacro {
                                                                     calledExpression: MemberAccessExprSyntax(
                                                                         name: identifier
                                                                     ),
+                                                                    leftParen: "(",
                                                                     argumentList: TupleExprElementListSyntax(
-                                                                        parameters.map { parameter in
+                                                                        parameters.enumerated().map { (index, _) in
                                                                             TupleExprElementSyntax(
                                                                                 expression: UnresolvedPatternExprSyntax(
                                                                                     pattern: ValueBindingPatternSyntax(
@@ -86,14 +87,16 @@ public struct ExcludeMacro: MemberMacro {
                                                                                         ),
                                                                                         valuePattern: IdentifierPatternSyntax(
                                                                                             identifier: TokenSyntax(
-                                                                                                stringLiteral: "TODO"
+                                                                                                stringLiteral: "param\(index)"
                                                                                             )
                                                                                         )
                                                                                     )
-                                                                                )
+                                                                                ),
+                                                                                trailingComma: index + 1 == parameters.count ? nil : ","
                                                                             )
                                                                         }
-                                                                    )
+                                                                    ),
+                                                                    rightParen: ")"
                                                                 )
                                                             )
                                                         )
@@ -120,26 +123,22 @@ public struct ExcludeMacro: MemberMacro {
                                                                     AssignmentExprSyntax(assignToken: .equalToken()),
                                                                     FunctionCallExprSyntax(
                                                                         calledExpression: MemberAccessExprSyntax(
-                                                                            name: identifier
+                                                                            leadingTrivia: [],
+                                                                            name: identifier,
+                                                                            trailingTrivia: []
                                                                         ),
+                                                                        leftParen: "(",
                                                                         argumentList: TupleExprElementListSyntax(
-                                                                            parameters.map { parameter in
+                                                                            parameters.enumerated().map { (index, parameter: EnumCaseParameterListSyntax.Element) in
                                                                                 TupleExprElementSyntax(
-                                                                                    expression: UnresolvedPatternExprSyntax(
-                                                                                        pattern: ValueBindingPatternSyntax(
-                                                                                            bindingKeyword: TokenSyntax(
-                                                                                                stringLiteral: "let"
-                                                                                            ),
-                                                                                            valuePattern: IdentifierPatternSyntax(
-                                                                                                identifier: TokenSyntax(
-                                                                                                    stringLiteral: "TODO"
-                                                                                                )
-                                                                                            )
-                                                                                        )
-                                                                                    )
+                                                                                    label: parameter.firstName,
+                                                                                    colon: parameter.firstName != nil ? ":" : nil,
+                                                                                    expression: IdentifierExprSyntax(identifier: TokenSyntax(stringLiteral: "param\(index)")),
+                                                                                    trailingComma: index + 1 == parameters.count ? nil : ","
                                                                                 )
                                                                             }
-                                                                        )
+                                                                        ),
+                                                                        rightParen: ")"
                                                                     )
                                                                 ]
                                                             )
