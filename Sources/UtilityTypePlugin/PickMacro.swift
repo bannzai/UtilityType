@@ -87,7 +87,7 @@ public struct PickMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
             
-            let syntax = try! StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
+            let syntax = try StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
@@ -152,7 +152,7 @@ public struct PickMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
             
-            let syntax = try! ClassDeclSyntax("\(access)class \(name)", membersBuilder: {
+            let syntax = try ClassDeclSyntax("\(access)class \(name)", membersBuilder: {
                 DeclSyntax("\(raw: classRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: classVariableName): \(raw: className))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
