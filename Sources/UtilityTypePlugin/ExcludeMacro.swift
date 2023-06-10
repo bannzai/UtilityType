@@ -34,6 +34,7 @@ public struct ExcludeMacro: MemberMacro {
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
             throw CustomError.message(#"@Exclude requires the raw type and property names, in the form @Exclude("PickTypeName", "one", "two")"#)
         }
+
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
         let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
         let uniqueVariableName = context.makeUniqueName("ExcludeMacro.Enum")
@@ -43,8 +44,8 @@ public struct ExcludeMacro: MemberMacro {
 
         let syntax = try EnumDeclSyntax("\(access)enum \(typeName)", membersBuilder: {
             MemberDeclListSyntax(
-                excludedCases.map { excludedCase in
-                    MemberDeclListItemSyntax(EnumCaseDeclSyntax(EnumCaseElementListSyntax([excludedCase])))!
+                try excludedCases.map { excludedCase in
+                    try MemberDeclListItemSyntax(EnumCaseDeclSyntax(EnumCaseElementListSyntax([excludedCase]))).tryUnwrap()
                 }
             )
             try InitializerDeclSyntax("\(access) init?(\(uniqueVariableName): \(typeName)") {
@@ -84,9 +85,9 @@ public struct ExcludeMacro: MemberMacro {
                                             })
                                         )
                                     ),
-                                    statements: CodeBlockItemListSyntax(itemsBuilder: {
+                                    statements: try CodeBlockItemListSyntax(itemsBuilder: {
                                         if let parameters {
-                                            CodeBlockItemSyntax(
+                                            try CodeBlockItemSyntax(
                                                 item: .expr(
                                                     SequenceExprSyntax(
                                                         elements: ExprListSyntax(
@@ -103,13 +104,13 @@ public struct ExcludeMacro: MemberMacro {
                                                                 )
                                                             ]
                                                         )
-                                                    ).cast(ExprSyntax.self)
+                                                    ).tryCast(ExprSyntax.self)
                                                 )
                                             )
                                         } else {
                                             CodeBlockItemSyntax(
                                                 item: .expr(
-                                                    SequenceExprSyntax(
+                                                    try SequenceExprSyntax(
                                                         elements: ExprListSyntax(
                                                             [
                                                                 IdentifierExprSyntax(identifier: .init(stringLiteral: "self")),
@@ -119,7 +120,7 @@ public struct ExcludeMacro: MemberMacro {
                                                                 )
                                                             ]
                                                         )
-                                                    ).cast(ExprSyntax.self)
+                                                    ).tryCast(ExprSyntax.self)
                                                 )
                                             )
                                         }
@@ -131,6 +132,7 @@ public struct ExcludeMacro: MemberMacro {
                 }
             }
         })
+        
         return [syntax.formatted().cast(DeclSyntax.self)]
     }
 }
