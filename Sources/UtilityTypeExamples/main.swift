@@ -3,7 +3,7 @@ import UtilityType
 
 @Pick("Picked", properties: "id", "name")
 @Pick("Picked2", properties: "name", "age")
-@Required()
+@Required
 public struct User {
     let id: UUID
     let name: String
