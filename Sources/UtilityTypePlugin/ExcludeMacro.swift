@@ -42,19 +42,27 @@ public struct ExcludeMacro: MemberMacro {
             cases.contains { c in enumCase.identifier.text == c }
         }
 
-        let syntax = try EnumDeclSyntax("\(access)enum \(typeName)", membersBuilder: {
+        let syntax = try EnumDeclSyntax("\(access)enum \(typeName)",
+                                        membersBuilder: {
             MemberDeclListSyntax(
-                try excludedCases.map { excludedCase in
-                    try MemberDeclListItemSyntax(EnumCaseDeclSyntax(EnumCaseElementListSyntax([excludedCase]))).tryUnwrap()
+                excludedCases.map { excludedCase in
+                    MemberDeclListItemSyntax(
+                        decl: EnumCaseDeclSyntax(
+                            elements: EnumCaseElementListSyntax(
+                                [excludedCase]
+                            )
+                        )
+                    )
                 }
             )
             try InitializerDeclSyntax("\(access) init?(\(uniqueVariableName): \(typeName)") {
                 try CodeBlockItemListSyntax {
                     try SwitchExprSyntax("switch \(uniqueVariableName)") {
-                        SwitchCaseListSyntax(try excludedCases.map { excludedCase in
+                        SwitchCaseListSyntax(try excludedCases.map {
+                            excludedCase in
                             let identifier = excludedCase.identifier
                             let parameters = excludedCase.associatedValue?.parameterList
-
+                            
                             return .switchCase(
                                 SwitchCaseSyntax(
                                     label: .case(
@@ -67,8 +75,23 @@ public struct ExcludeMacro: MemberMacro {
                                                                 calledExpression: MemberAccessExprSyntax(
                                                                     name: identifier
                                                                 ),
-                                                                argumentList: parameters.cast(
-                                                                    TupleExprElementListSyntax.self
+                                                                argumentList: TupleExprElementListSyntax(
+                                                                    parameters.map { parameter in
+                                                                        TupleExprElementSyntax(
+                                                                            expression: UnresolvedPatternExprSyntax(
+                                                                                pattern: ValueBindingPatternSyntax(
+                                                                                    bindingKeyword: TokenSyntax(
+                                                                                        stringLiteral: "let"
+                                                                                    ),
+                                                                                    valuePattern: IdentifierPatternSyntax(
+                                                                                        identifier: TokenSyntax(
+                                                                                            stringLiteral: "TODO"
+                                                                                        )
+                                                                                    )
+                                                                                )
+                                                                            )
+                                                                        )
+                                                                    }
                                                                 )
                                                             )
                                                         )
@@ -98,8 +121,23 @@ public struct ExcludeMacro: MemberMacro {
                                                                     calledExpression: MemberAccessExprSyntax(
                                                                         name: identifier
                                                                     ),
-                                                                    argumentList: parameters.cast(
-                                                                        TupleExprElementListSyntax.self
+                                                                    argumentList: TupleExprElementListSyntax(
+                                                                        parameters.map { parameter in
+                                                                            TupleExprElementSyntax(
+                                                                                expression: UnresolvedPatternExprSyntax(
+                                                                                    pattern: ValueBindingPatternSyntax(
+                                                                                        bindingKeyword: TokenSyntax(
+                                                                                            stringLiteral: "let"
+                                                                                        ),
+                                                                                        valuePattern: IdentifierPatternSyntax(
+                                                                                            identifier: TokenSyntax(
+                                                                                                stringLiteral: "TODO"
+                                                                                            )
+                                                                                        )
+                                                                                    )
+                                                                                )
+                                                                            )
+                                                                        }
                                                                     )
                                                                 )
                                                             ]
