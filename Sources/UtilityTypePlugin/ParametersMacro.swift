@@ -43,8 +43,14 @@ public struct ParametersMacro: PeerMacro {
             initializer: TypeInitializerClauseSyntax(
                 value:
                     TupleTypeSyntax(
-                        elements: TupleTypeElementListSyntax(parameters.compactMap { parameter in
-                            TupleTypeElementSyntax(type: parameter.type)
+                        elements: TupleTypeElementListSyntax(parameters.indices.map { index in
+                            let parameter = parameters[index]
+                            return TupleTypeElementSyntax(
+                                name: parameter.firstName,
+                                colon: .colonToken(),
+                                type: parameter.type,
+                                trailingComma: index + 1 == parameters.count ? nil : .commaToken()
+                            )
                         })
                     )
             )

@@ -1,10 +1,10 @@
 import Foundation
 import UtilityType
 
-typealias Tuple = (a: Int, b: String, c: Void)
+typealias Tuple = (a: Int, b: String, c: () -> Void)
 
 @Parameters("FunctionType")
-func function(a: Int, b: String, c: @escaping () -> Void) {
+func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) {
 
 }
 
