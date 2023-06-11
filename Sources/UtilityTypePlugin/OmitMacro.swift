@@ -15,14 +15,14 @@ public struct OmitMacro: MemberMacro {
             string.segments.count == 1,
             let name = string.segments.first
         else {
-            throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
+            throw CustomError.message(#"@Omit requires the raw type and property names, in the form @Omit("OmitTypeName", "id", "name")"#)
         }
         
         let _properties = arguments.dropFirst()
         guard _properties
             .map(\.expression)
             .allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
-            throw CustomError.message("@Pick requires the property names to string literal. got: \(_properties)")
+            throw CustomError.message("@Omit requires the property names to string literal. got: \(_properties)")
         }
         let properties = _properties
             .map(\.expression)
