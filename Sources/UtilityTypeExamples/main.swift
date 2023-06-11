@@ -20,6 +20,7 @@ let textEnumExclude = E.ExcludedThree(testEnum)
 
 @Pick("Picked", properties: "id", "name")
 @Pick("Picked2", properties: "name", "age")
+@Omit("Omitted", properties: "id")
 @Required
 public struct User {
     let id: UUID
