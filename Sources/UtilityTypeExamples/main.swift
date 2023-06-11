@@ -3,11 +3,10 @@ import UtilityType
 
 typealias Tuple = (a: Int, b: String, c: () -> Void)
 
-@Parameters("FunctionType")
+@Parameters("FunctionArgs")
 func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) {
 
 }
-
 
 @Exclude("ExcludedThree", exlcudes: "three")
 public enum E {
