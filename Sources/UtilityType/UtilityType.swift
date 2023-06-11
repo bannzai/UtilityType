@@ -13,6 +13,9 @@ public macro Omit(_ typename: String, properties: String...) = #externalMacro(mo
 public macro Required() = #externalMacro(module: "UtilityTypePlugin", type: "RequiredMacro")
 
 @attached(member, names: arbitrary)
+public macro Partial() = #externalMacro(module: "UtilityTypePlugin", type: "PartialMacro")
+
+@attached(member, names: arbitrary)
 public macro Exclude(_ typename: String, exlcudes: String...) = #externalMacro(module: "UtilityTypePlugin", type: "ExcludeMacro")
 
 @attached(peer, names: arbitrary)
