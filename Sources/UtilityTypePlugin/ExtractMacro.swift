@@ -22,7 +22,7 @@ public struct ExtractMacro: MemberMacro {
         guard _cases
             .map(\.expression)
             .allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
-            throw CustomError.message("@Extract requires the exclude case names to string literal. got: \(_cases)")
+            throw CustomError.message("@Extract requires the extract case names to string literal. got: \(_cases)")
         }
         let cases = _cases
             .map(\.expression)
@@ -39,8 +39,8 @@ public struct ExtractMacro: MemberMacro {
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
         let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
         let uniqueVariableName = context.makeUniqueName("enumType")
-        let excludedCases = enumDecl.cases.filter { enumCase in
-            !cases.contains { c in enumCase.identifier.text == c }
+        let extractdCases = enumDecl.cases.filter { enumCase in
+            cases.contains { c in enumCase.identifier.text == c }
         }
 
         let syntax = try EnumDeclSyntax(
@@ -48,11 +48,11 @@ public struct ExtractMacro: MemberMacro {
             membersBuilder: {
                 // case .one(Int)
                 MemberDeclListSyntax(
-                    excludedCases.map { excludedCase in
+                    extractdCases.map { extractdCase in
                         MemberDeclListItemSyntax(
                             decl: EnumCaseDeclSyntax(
                                 elements: EnumCaseElementListSyntax(
-                                    [excludedCase]
+                                    [extractdCase]
                                 )
                             )
                         )
@@ -61,10 +61,10 @@ public struct ExtractMacro: MemberMacro {
                 try InitializerDeclSyntax("\(access) init?(_ \(uniqueVariableName): \(typeName))") {
                     try CodeBlockItemListSyntax {
                         try SwitchExprSyntax("switch \(uniqueVariableName)") {
-                            SwitchCaseListSyntax(try excludedCases.map {
-                                excludedCase in
-                                let identifier = excludedCase.identifier
-                                let parameters = excludedCase.associatedValue?.parameterList
+                            SwitchCaseListSyntax(try extractdCases.map {
+                                extractdCase in
+                                let identifier = extractdCase.identifier
+                                let parameters = extractdCase.associatedValue?.parameterList
 
                                 return .switchCase(
                                     SwitchCaseSyntax(
