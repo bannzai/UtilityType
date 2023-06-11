@@ -39,8 +39,8 @@ public struct ExcludeMacro: MemberMacro {
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
         let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
         let uniqueVariableName = context.makeUniqueName("enumType")
-        let extractedCases = enumDecl.cases.filter { enumCase in
-            cases.contains { c in enumCase.identifier.text == c }
+        let excludedCases = enumDecl.cases.filter { enumCase in
+            !cases.contains { c in enumCase.identifier.text == c }
         }
 
         let syntax = try EnumDeclSyntax(
@@ -48,7 +48,7 @@ public struct ExcludeMacro: MemberMacro {
             membersBuilder: {
                 // case .one(Int)
                 MemberDeclListSyntax(
-                    extractedCases.map { excludedCase in
+                    excludedCases.map { excludedCase in
                         MemberDeclListItemSyntax(
                             decl: EnumCaseDeclSyntax(
                                 elements: EnumCaseElementListSyntax(
@@ -61,7 +61,7 @@ public struct ExcludeMacro: MemberMacro {
                 try InitializerDeclSyntax("\(access) init?(_ \(uniqueVariableName): \(typeName))") {
                     try CodeBlockItemListSyntax {
                         try SwitchExprSyntax("switch \(uniqueVariableName)") {
-                            SwitchCaseListSyntax(try extractedCases.map {
+                            SwitchCaseListSyntax(try excludedCases.map {
                                 excludedCase in
                                 let identifier = excludedCase.identifier
                                 let parameters = excludedCase.associatedValue?.parameterList
