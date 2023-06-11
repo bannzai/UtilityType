@@ -9,6 +9,7 @@ struct UtilityTypePlugin: CompilerPlugin {
         OmitMacro.self,
         RequiredMacro.self,
         PartialMacro.self,
+        ExtractMacro.self,
         ExcludeMacro.self,
         ParametersMacro.self,
         ReturnTypeMacro.self,

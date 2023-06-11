@@ -2,7 +2,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxBuilder
 
-public struct ExcludeMacro: MemberMacro {
+public struct ExtractMacro: MemberMacro {
     public static func expansion<Declaration, Context>(
         of node: AttributeSyntax,
         providingMembersOf declaration: Declaration,
@@ -15,14 +15,14 @@ public struct ExcludeMacro: MemberMacro {
             string.segments.count == 1,
             let name = string.segments.first 
         else {
-            throw CustomError.message(#"@Exclude requires the raw type and property names, in the form @Exclude("ExcludedType", "one", "two")"#)
+            throw CustomError.message(#"@Extract requires the raw type and property names, in the form @Extract("ExtractedType", "one", "two")"#)
         }
 
         let _cases = arguments.dropFirst()
         guard _cases
             .map(\.expression)
             .allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
-            throw CustomError.message("@Exclude requires the exclude case names to string literal. got: \(_cases)")
+            throw CustomError.message("@Extract requires the extract case names to string literal. got: \(_cases)")
         }
         let cases = _cases
             .map(\.expression)
@@ -33,14 +33,14 @@ public struct ExcludeMacro: MemberMacro {
             .map(\.text)
 
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
-            throw CustomError.message(#"@Exclude should attach to Enum)"#)
+            throw CustomError.message(#"@Extract should attach to Enum)"#)
         }
 
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
         let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
         let uniqueVariableName = context.makeUniqueName("enumType")
-        let excludedCases = enumDecl.cases.filter { enumCase in
-            !cases.contains { c in enumCase.identifier.text == c }
+        let extractdCases = enumDecl.cases.filter { enumCase in
+            cases.contains { c in enumCase.identifier.text == c }
         }
 
         let syntax = try EnumDeclSyntax(
@@ -48,11 +48,11 @@ public struct ExcludeMacro: MemberMacro {
             membersBuilder: {
                 // case .one(Int)
                 MemberDeclListSyntax(
-                    excludedCases.map { excludedCase in
+                    extractdCases.map { extractdCase in
                         MemberDeclListItemSyntax(
                             decl: EnumCaseDeclSyntax(
                                 elements: EnumCaseElementListSyntax(
-                                    [excludedCase]
+                                    [extractdCase]
                                 )
                             )
                         )
@@ -61,10 +61,10 @@ public struct ExcludeMacro: MemberMacro {
                 try InitializerDeclSyntax("\(access) init?(_ \(uniqueVariableName): \(typeName))") {
                     try CodeBlockItemListSyntax {
                         try SwitchExprSyntax("switch \(uniqueVariableName)") {
-                            SwitchCaseListSyntax(try excludedCases.map {
-                                excludedCase in
-                                let identifier = excludedCase.identifier
-                                let parameters = excludedCase.associatedValue?.parameterList
+                            SwitchCaseListSyntax(try extractdCases.map {
+                                extractdCase in
+                                let identifier = extractdCase.identifier
+                                let parameters = extractdCase.associatedValue?.parameterList
 
                                 return .switchCase(
                                     SwitchCaseSyntax(

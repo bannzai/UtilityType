@@ -8,6 +8,7 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
 }
 
 @Exclude("ExcludedThree", exlcudes: "three")
+@Extract("ExtractedOne", exlcudes: "one")
 public enum E {
     case one
     case two(Int)
@@ -16,7 +17,10 @@ public enum E {
 }
 
 let testEnum = E.four(a: "value", b: 10)
-let textEnumExclude = E.ExcludedThree(testEnum)
+let testEnumExclude = E.ExcludedThree(testEnum)
+
+let testEnum2 = E.one
+let testEnumExtract = E.ExtractedOne(testEnum2)
 
 @Pick("Picked", properties: "id", "name")
 @Pick("Picked2", properties: "name", "age")
