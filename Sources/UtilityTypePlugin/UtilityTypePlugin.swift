@@ -10,6 +10,7 @@ struct UtilityTypePlugin: CompilerPlugin {
         ExcludeMacro.self,
         ParametersMacro.self,
         ReturnTypeMacro.self,
+        OmitMacro.self,
     ]
 }
 #endif
