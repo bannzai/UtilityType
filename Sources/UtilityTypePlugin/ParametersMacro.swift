@@ -14,11 +14,11 @@ public struct ParametersMacro: PeerMacro {
             string.segments.count == 1,
             let name = string.segments.first 
         else {
-            throw CustomError.message(#"@Parameters requires the raw type and property names, in the form @Parameters("PickTypeName")"#)
+            throw CustomError.message(#"@Parameters requires the type name, in the form @Parameters("PickTypeName")"#)
         }
 
         guard let funcDecl = declaration.as(FunctionDeclSyntax.self) else {
-            throw CustomError.message("@Parameters should attach to Enum)")
+            throw CustomError.message("@Parameters should attach to `function`)")
         }
 
         let access = funcDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)

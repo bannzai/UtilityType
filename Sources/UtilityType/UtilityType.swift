@@ -14,3 +14,6 @@ public macro Exclude(_ typename: String, exlcudes: String...) = #externalMacro(m
 
 @attached(peer, names: arbitrary)
 public macro Parameters(_ typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "ParametersMacro")
+
+@attached(peer, names: arbitrary)
+public macro ReturnType(_ typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "ReturnTypeMacro")
