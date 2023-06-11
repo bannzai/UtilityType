@@ -15,7 +15,7 @@ public struct ExcludeMacro: MemberMacro {
             string.segments.count == 1,
             let name = string.segments.first 
         else {
-            throw CustomError.message(#"@Exclude requires the raw type and property names, in the form @Exclude("PickTypeName", "one", "two")"#)
+            throw CustomError.message(#"@Exclude requires the raw type and property names, in the form @Exclude("ExcludedType", "one", "two")"#)
         }
 
         let _cases = arguments.dropFirst()
@@ -39,8 +39,8 @@ public struct ExcludeMacro: MemberMacro {
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
         let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
         let uniqueVariableName = context.makeUniqueName("enumType")
-        let excludedCases = enumDecl.cases.filter { enumCase in
-            !cases.contains { c in enumCase.identifier.text == c }
+        let extractedCases = enumDecl.cases.filter { enumCase in
+            cases.contains { c in enumCase.identifier.text == c }
         }
 
         let syntax = try EnumDeclSyntax(
@@ -48,7 +48,7 @@ public struct ExcludeMacro: MemberMacro {
             membersBuilder: {
                 // case .one(Int)
                 MemberDeclListSyntax(
-                    excludedCases.map { excludedCase in
+                    extractedCases.map { excludedCase in
                         MemberDeclListItemSyntax(
                             decl: EnumCaseDeclSyntax(
                                 elements: EnumCaseElementListSyntax(
@@ -61,7 +61,7 @@ public struct ExcludeMacro: MemberMacro {
                 try InitializerDeclSyntax("\(access) init?(_ \(uniqueVariableName): \(typeName))") {
                     try CodeBlockItemListSyntax {
                         try SwitchExprSyntax("switch \(uniqueVariableName)") {
-                            SwitchCaseListSyntax(try excludedCases.map {
+                            SwitchCaseListSyntax(try extractedCases.map {
                                 excludedCase in
                                 let identifier = excludedCase.identifier
                                 let parameters = excludedCase.associatedValue?.parameterList
