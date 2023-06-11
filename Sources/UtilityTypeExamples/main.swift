@@ -1,11 +1,10 @@
 import Foundation
 import UtilityType
 
-typealias Tuple = (a: Int, b: String, c: () -> Void)
-
+@ReturnType("FunctionReturnType")
 @Parameters("FunctionArgs")
-func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) {
-
+func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int {
+    return 1
 }
 
 @Exclude("ExcludedThree", exlcudes: "three")
