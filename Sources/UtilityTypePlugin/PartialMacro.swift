@@ -66,6 +66,7 @@ public struct PartialMacro: MemberMacro {
                 .joined(separator: "\n")
             let eachInitArgument = requiredStructProperties
                 .map(\.description)
+                .map { $0 + "?" }
                 .joined(separator: ", ")
             let assignedToSelfPropertyStatementsFromRawProperty = requiredStructProperties
                 .compactMap { structProperty in
@@ -143,6 +144,7 @@ public struct PartialMacro: MemberMacro {
                 .joined(separator: "\n")
             let eachInitArgument = requiredClassProperties
                 .map(\.description)
+                .map { $0 + "?" }
                 .joined(separator: ", ")
             let assignedToSelfPropertyStatementsFromRawProperty = requiredClassProperties
                 .compactMap { classProperty in
