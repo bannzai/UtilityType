@@ -45,8 +45,8 @@ let package = Package(
             dependencies: ["UtilityTypePlugin"]
         ),
         .testTarget(
-            name: "UtilityTypeTests",
-            dependencies: ["UtilityType"]
+            name: "UtilityTypePluginTests",
+            dependencies: ["UtilityTypePlugin"]
         ),
         .executableTarget(
             name: "UtilityTypeExamples",
