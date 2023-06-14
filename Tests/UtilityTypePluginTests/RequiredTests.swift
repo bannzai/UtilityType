@@ -7,20 +7,51 @@ import XCTest
 
 final class RequiredTests: XCTestCase {
     func testExample() throws {
-        let sf: SourceFileSyntax =
+        let sourceFile: SourceFileSyntax =
       #"""
-      let a = #stringify(x + y)
-      let b = #stringify("Hello, \(name)")
+      @Required
+      public struct User {
+          let id: UUID
+          let name: String
+          let age: Int
+          let optional: Void?
+      }
       """#
         let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sf: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
+            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
         )
-        let transformedSF = sf.expand(macros: testMacros, in: context)
+        let expanded = sourceFile.expand(macros: [
+            "Required": RequiredMacro.self
+        ], in: context)
+
         XCTAssertEqual(
-            transformedSF.description,
+            expanded.formatted().description,
       #"""
-      let a = (x + y, "x + y")
-      let b = ("Hello, \(name)", #""Hello, \(name)""#)
+
+      public struct User {
+          let id: UUID
+          let name: String
+          let age: Int
+          let optional: Void?
+          public struct Required {
+              public let id: UUID
+              public let name: String
+              public let age: Int
+              public let optional: Void
+              public init(user: User) {
+                  self.id = user.id
+                  self.name = user.name
+                  self.age = user.age
+                  self.optional = user.optional!
+              }
+              public init(id: UUID, name: String, age: Int, optional: Void) {
+                  self.id = id
+                  self.name = name
+                  self.age = age
+                  self.optional = optional
+              }
+          }
+      }
       """#
         )
     }
