@@ -4,7 +4,6 @@ import SwiftSyntaxMacros
 import UtilityTypePlugin
 import XCTest
 
-
 final class RequiredTests: XCTestCase {
     func testExample() throws {
         let sourceFile: SourceFileSyntax =
