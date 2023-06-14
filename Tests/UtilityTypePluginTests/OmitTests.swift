@@ -4,11 +4,11 @@ import SwiftSyntaxMacros
 import UtilityTypePlugin
 import XCTest
 
-final class RequiredTests: XCTestCase {
+final class OmitTests: XCTestCase {
     func testMacro() throws {
         let sourceFile: SourceFileSyntax =
       #"""
-      @Required
+      @Omit("Omitted", properties: "id")
       public struct User {
           let id: UUID
           let name: String
@@ -20,7 +20,7 @@ final class RequiredTests: XCTestCase {
             sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
         )
         let expanded = sourceFile.expand(macros: [
-            "Required": RequiredMacro.self
+            "Omit": OmitMacro.self
         ], in: context)
 
         XCTAssertEqual(
@@ -32,19 +32,16 @@ final class RequiredTests: XCTestCase {
           let name: String
           let age: Int
           let optional: Void?
-          public struct Required {
-              public let id: UUID
+          public struct Omitted {
               public let name: String
               public let age: Int
-              public let optional: Void
+              public let optional: Void?
               public init(user: User) {
-                  self.id = user.id
                   self.name = user.name
                   self.age = user.age
-                  self.optional = user.optional!
+                  self.optional = user.optional
               }
-              public init(id: UUID, name: String, age: Int, optional: Void) {
-                  self.id = id
+              public init(name: String, age: Int, optional: Void?) {
                   self.name = name
                   self.age = age
                   self.optional = optional
