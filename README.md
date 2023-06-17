@@ -122,7 +122,7 @@ public enum Enum {
 let testEnum = Enum.four(a: "value", b: 10)
 let excluded = Enum.ExcludedThree(testEnum)
 
-// The switch statement without three
+// The switch statement without `three`.
 switch excluded {
 case .one:
     print("one")
@@ -130,6 +130,33 @@ case .two(let value):
     print("two: value:\(value)")
 case .four(a: let a, b: let b):
     print("four: a:\(a), b: \(b)")
+case nil:
+    print("nil")
+}
+
+```
+
+## Extract
+Constructs a type by extracting from enum all cases that are assignable to `extracts`.
+
+Example
+
+```swift
+@Extract("ExtractedOne", extracts: "one")
+public enum Enum {
+    case one
+    case two(Int)
+    case three(String, Int)
+    case four(a: String, b: Int)
+}
+
+let testEnum2 = Enum.one
+let extracted = Enum.ExtractedOne(testEnum2)
+
+// The switch statement only `one`.
+switch extracted {
+case .one:
+    print("one")
 case nil:
     print("nil")
 }
