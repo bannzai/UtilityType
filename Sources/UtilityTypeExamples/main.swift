@@ -1,10 +1,16 @@
 import Foundation
 import UtilityType
 
+@Pick("Picked", properties: "id")
+public struct Item {
+    let id: UUID
+    let name: String
+}
+
 @Partial
 @Required
-@Pick("Picked", properties: "id", "name")
 @Omit("Omitted", properties: "id")
+@Pick("Picked", properties: "id", "name", macros: #"@Required"#)
 public struct User {
     let id: UUID
     let name: String
@@ -16,6 +22,7 @@ let user = User(id: .init(), name: "bannzai", age: 30, optional: nil)
 let partial = User.Partial(id: nil, name: nil, age: nil, optional: nil)
 let required = User.Required(id: UUID(), name: "bannzai", age: 30, optional: ())
 let pickedUser = User.Picked(id: UUID(), name: "bannzai")
+let nestMacro = User.Picked.Required(id: .init(), name: "bannzai")
 let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
 
 @Exclude("ExcludedThree", exlcudes: "three")
