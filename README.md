@@ -22,6 +22,15 @@ Constructs a type with all properties of Type set to optional. This utility will
 ### Example
 
 ```swift
+@Partial
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+}
+
+let partialUser = User.Partial(id: nil, name: nil, age: nil, optional: nil)
 
 ```
 
