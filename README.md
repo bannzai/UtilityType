@@ -193,3 +193,6 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
 
 let returnType = FunctionReturnType(rawValue: 100)
 ```
+
+## LICENSE
+[Ocha](https://github.com/bannzai/UtilityType/) is released under the MIT license. See [LICENSE](./LICENSE) for details.
