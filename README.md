@@ -62,7 +62,7 @@ let partialUser = User.Partial(user: user)
 ```
 
 ## Pick
-Constructs a type by picking the set of properties keys (only string literal) from attached Type.
+Constructs a type by picking the set of specific properties keys (only string literal) from attached Type.
 
 Example
 
@@ -84,7 +84,7 @@ let pickedUser = User.Picked(user: user)
 ```
 
 ## Omit
-Constructs a type by picking all properties from Type and then removing Keys (only string literal). The opposite of Pick.
+Constructs a type by picking all properties from Type and then removing specific properties (only string literal). The opposite of Pick.
 
 Example
 
