@@ -18,12 +18,21 @@ public struct PickMacro: MemberMacro {
             throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
         
-        let _properties = arguments.dropFirst()
+        var _properties = arguments.dropFirst()
+        let macro: StringLiteralSegmentsSyntax?
+        if arguments.last?.label?.text == "macros" {
+            macro = _properties.last?.expression.as(StringLiteralExprSyntax.self)?.segments
+            _properties = _properties.dropLast()
+        } else {
+            macro = nil
+        }
+
         guard _properties
             .map(\.expression)
             .allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
             throw CustomError.message("@Pick requires the property names to string literal. got: \(_properties)")
         }
+
         let properties = _properties
             .map(\.expression)
             .compactMap { $0.as(StringLiteralExprSyntax.self) }
@@ -31,7 +40,7 @@ public struct PickMacro: MemberMacro {
             .compactMap { $0.as(StringSegmentSyntax.self) }
             .flatMap { $0.tokens(viewMode: .all) }
             .map(\.text)
-        
+
         switch declaration.kind {
         case .structDecl:
             guard let declaration = declaration.as(StructDeclSyntax.self) else {
@@ -88,7 +97,7 @@ public struct PickMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
             
-            let syntax = try StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
+            let syntax = try StructDeclSyntax("\(macro)\(access)struct \(name)", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
