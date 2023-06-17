@@ -1,31 +1,10 @@
 import Foundation
 import UtilityType
 
-@ReturnType("FunctionReturnType")
-@Parameters("FunctionArgs")
-func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int {
-    return 1
-}
-
-@Exclude("ExcludedThree", exlcudes: "three")
-@Extract("ExtractedOne", exlcudes: "one")
-public enum E {
-    case one
-    case two(Int)
-    case three(String, Int)
-    case four(a: String, b: Int)
-}
-
-let testEnum = E.four(a: "value", b: 10)
-let testEnumExclude = E.ExcludedThree(testEnum)
-
-let testEnum2 = E.one
-let testEnumExtract = E.ExtractedOne(testEnum2)
-
+@Partial
+@Required
 @Pick("Picked", properties: "id", "name")
 @Omit("Omitted", properties: "id")
-@Required
-@Partial
 public struct User {
     let id: UUID
     let name: String
@@ -34,8 +13,49 @@ public struct User {
 }
 
 let user = User(id: .init(), name: "bannzai", age: 30, optional: nil)
-let pickedUser: User.Picked = .init(user: user)
-let required = User.Required(user: user)
 let partial = User.Partial(id: nil, name: nil, age: nil, optional: nil)
+let required = User.Required(id: UUID(), name: "bannzai", age: 30, optional: ())
+let pickedUser = User.Picked(id: UUID(), name: "bannzai")
+let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
 
+@Exclude("ExcludedThree", exlcudes: "three")
+@Extract("ExtractedOne", extracts: "one")
+public enum Enum {
+    case one
+    case two(Int)
+    case three(String, Int)
+    case four(a: String, b: Int)
+}
 
+let testEnum = Enum.four(a: "value", b: 10)
+let excluded = Enum.ExcludedThree(testEnum)
+
+switch excluded {
+case .one:
+    print("one")
+case .two(let value):
+    print("two: value:\(value)")
+case .four(a: let a, b: let b):
+    print("four: a:\(a), b: \(b)")
+case nil:
+    print("nil")
+}
+
+let testEnum2 = Enum.one
+let extracted = Enum.ExtractedOne(testEnum2)
+
+switch extracted {
+case .one:
+    print("one")
+case nil:
+    print("nil")
+}
+
+@Parameters("FunctionArgs")
+@ReturnType("FunctionReturnType")
+func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int {
+    return 1
+}
+
+let returnType = FunctionReturnType(rawValue: 100)
+let args: FunctionArgs = (a: 10, b: "value", c: { print("c") }, e: { print("e") })
