@@ -22,10 +22,10 @@ let testEnumExclude = E.ExcludedThree(testEnum)
 let testEnum2 = E.one
 let testEnumExtract = E.ExtractedOne(testEnum2)
 
-@Pick("Picked", properties: "id", "name")
 @Omit("Omitted", properties: "id")
 @Required
 @Partial
+@Pick("Picked", properties: "id", "name")
 public struct User {
     let id: UUID
     let name: String
@@ -34,8 +34,10 @@ public struct User {
 }
 
 let user = User(id: .init(), name: "bannzai", age: 30, optional: nil)
-let pickedUser: User.Picked = .init(user: user)
-let required = User.Required(user: user)
+let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
+let pickedUser = User.Picked(id: UUID(), name: "bannzai")
+let required = User.Required(id: UUID(), name: "bannzai", age: 30, optional: ())
 let partial = User.Partial(id: nil, name: nil, age: nil, optional: nil)
+
 
 

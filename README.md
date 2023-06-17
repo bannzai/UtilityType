@@ -75,10 +75,32 @@ public struct User {
     let optional: Void?
 }
 
-// Picked is picked properties from User.
+// Pick is picked properties from User.
 let pickedUser = User.Picked(id: UUID(), name: "bannzai")
 
 // OR
 let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let pickedUser = User.Picked(user: user)
+```
+
+## Omit
+Constructs a type by picking all properties from Type and then removing Keys (only string literal). The opposite of Pick.
+
+Example
+
+```swift
+@Omit("Omitted", properties: "id")
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+}
+
+// Omit is omitted properties from User.
+let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
+
+// OR
+let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
+let omittedUser = User.Omitted(user: user)
 ```
