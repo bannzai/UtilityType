@@ -179,3 +179,17 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
 let args: FunctionArgs = (a: 10, b: "value", c: { print("c") }, e: { print("e") })
 
 ```
+
+## ReturnType
+Constructs a type consisting of the return type of function.
+
+Example
+
+```swift
+@ReturnType("FunctionReturnType")
+func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int {
+    return 1
+}
+
+let returnType = FunctionReturnType(rawValue: 100)
+```
