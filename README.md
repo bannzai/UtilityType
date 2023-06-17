@@ -61,4 +61,24 @@ let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let partialUser = User.Partial(user: user)
 ```
 
+## Pick
+Constructs a type by picking the set of properties keys (only string literal) from attached Type.
 
+Example
+
+```swift
+@Pick("Picked", properties: "id", "name")
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+}
+
+// Picked is picked properties from User.
+let pickedUser = User.Picked(id: UUID(), name: "bannzai")
+
+// OR
+let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
+let pickedUser = User.Picked(user: user)
+```
