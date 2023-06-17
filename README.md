@@ -162,3 +162,20 @@ case nil:
 }
 
 ```
+
+## Parameters
+Constructs a tuple type from the types used in the parameters of a function type.
+
+
+Example
+
+```swift
+
+@Parameters("FunctionArgs")
+func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int {
+    return 1
+}
+
+let args: FunctionArgs = (a: 10, b: "value", c: { print("c") }, e: { print("e") })
+
+```
