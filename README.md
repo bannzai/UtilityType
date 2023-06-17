@@ -19,7 +19,7 @@ UtilityType offers an extensive set of tools to enhance your flexibility and pro
 ## Partial
 Constructs a type with all properties of Type set to optional. This utility will return a type that represents all subsets of a given type.
 
-### Example
+Example
 
 ```swift
 @Partial
@@ -30,7 +30,35 @@ public struct User {
     let optional: Void?
 }
 
+// All properties are to optional.
 let partialUser = User.Partial(id: nil, name: nil, age: nil, optional: nil)
 
+// OR
+let user = User(id: .init(), name: "bannzai", age: 30, optional: nil)
+let partialUser = User.Partial(user: user)
+
 ```
+
+## Required
+Constructs a type consisting of all properties of Type set to required. The opposite of [Partial](./#Partial).
+
+Example
+
+```swift
+@Required
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+}
+
+// All properties are to non optional.
+let requiredUser = User.Required(id: UUID(), name: "bannzai", age: 30, optional: ())
+
+// OR
+let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
+let partialUser = User.Partial(user: user)
+```
+
 
