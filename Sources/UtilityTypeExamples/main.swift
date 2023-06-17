@@ -8,7 +8,7 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
 }
 
 @Exclude("ExcludedThree", exlcudes: "three")
-@Extract("ExtractedOne", exlcudes: "one")
+@Extract("ExtractedOne", extracts: "one")
 public enum E {
     case one
     case two(Int)
