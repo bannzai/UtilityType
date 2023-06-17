@@ -104,3 +104,34 @@ let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
 let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let omittedUser = User.Omitted(user: user)
 ```
+
+## Exclude
+Constructs a type by excluding from enum all cases that are assignable to `exlcudes`.
+
+Example
+
+```swift
+@Exclude("ExcludedThree", exlcudes: "three")
+public enum Enum {
+    case one
+    case two(Int)
+    case three(String, Int)
+    case four(a: String, b: Int)
+}
+
+let testEnum = Enum.four(a: "value", b: 10)
+let excluded = Enum.ExcludedThree(testEnum)
+
+// The switch statement without three
+switch excluded {
+case .one:
+    print("one")
+case .two(let value):
+    print("two: value:\(value)")
+case .four(a: let a, b: let b):
+    print("four: a:\(a), b: \(b)")
+case nil:
+    print("nil")
+}
+
+```
