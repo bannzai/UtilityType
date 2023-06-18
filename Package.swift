@@ -11,16 +11,9 @@ let package = Package(
         .macOS(.v13),
     ],
     products: [
-        .executable(
-            name: "UtilityTypeExamples",
-            targets: ["UtilityTypeExamples"]
-        ),
         .library(
             name: "UtilityType",
             targets: ["UtilityType"]),
-        .library(
-            name: "UtilityTypePlugin",
-            targets: ["UtilityTypePlugin"]),
     ],
     dependencies: [
         .package(
