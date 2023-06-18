@@ -33,7 +33,6 @@ public struct PickMacro: MemberMacro {
             _macros = nil
             _properties = arguments.dropFirst()
         }
-
         let macros = _macros?.joined(separator: "\n") ?? ""
 
         guard _properties
