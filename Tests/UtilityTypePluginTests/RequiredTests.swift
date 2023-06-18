@@ -58,7 +58,7 @@ final class RequiredTests: XCTestCase {
     func testMacroNest() throws {
         let sourceFile: SourceFileSyntax =
       #"""
-      @Required(macros: #"@Pick("Picked", properties: "id")
+      @Required(macros: #"@Pick("Picked", properties: "id")"#)
       public struct User {
           let id: UUID
           let name: String
