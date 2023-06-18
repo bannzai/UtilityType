@@ -8,7 +8,7 @@ final class PickTests: XCTestCase {
     func testMacro() throws {
         let sourceFile: SourceFileSyntax =
       #"""
-      @Pick("Pickted", properties: "id", "name", macros: "@Required")
+      @Pick("Pickted", properties: "id", "name", macros: #"@Required"#, #"@Partial"#)
       public struct User {
           let id: UUID
           let name: String
