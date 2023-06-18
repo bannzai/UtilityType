@@ -195,7 +195,8 @@ let returnType = FunctionReturnType(rawValue: 100)
 
 ```
 
-## UtilityType macro allow attached other macro that pass macro string literal to `macros:`.
+## Nested Macro
+**UtilityType** macro allow attached other macro that pass macro string literal to `macros:`.
 
 For example:
 
