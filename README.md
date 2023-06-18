@@ -193,8 +193,29 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
 
 let returnType = FunctionReturnType(rawValue: 100)
 
-
 ```
 
+## UtilityType macro allow attached other macro that pass macro string literal to `macros:`.
+
+For example:
+
+```swift
+@Pick("PickedNest", properties: "id", "name", macros: #"@Required"#, #"@Partial"#, #"@Omit("Omitted", properties: "id")"#)
+@Omit("OmittedNest", properties: "name", macros: #"@Required"#, #"@Partial"#, #"@Pick("Picked", properties: "id")"#)
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+}
+
+let pickedNestRequierd = User.PickedNest.Required(id: UUID), name: "bannzai")
+let pickedNestPartial = User.PickedNest.Partial(id: UUID), name: "bannzai")
+let pickedNestOmit = User.PickedNest.Omitted(name: "bannzai")
+let omittedNestPartial = User.OmittedNest.Partial(id: nil, age: nil, optional: nil)
+let omittedNestRequired = User.OmittedNest.Required(id: UUID(), age: 30, optional: ())
+let omittedNestPick = User.OmittedNest.Picked(id: UUID())
+
+```
 ## LICENSE
 [Ocha](https://github.com/bannzai/UtilityType/) is released under the MIT license. See [LICENSE](./LICENSE) for details.
