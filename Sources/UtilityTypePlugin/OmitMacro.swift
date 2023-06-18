@@ -18,7 +18,23 @@ public struct OmitMacro: MemberMacro {
             throw CustomError.message(#"@Omit requires the raw type and property names, in the form @Omit("OmitTypeName", "id", "name")"#)
         }
         
-        let _properties = arguments.dropFirst()
+        let _macros: [String]?
+        var _properties: Slice<TupleExprElementListSyntax>
+        if let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
+            _macros = arguments[macrosIndex...]
+                .map(\.expression)
+                .compactMap { $0.as(StringLiteralExprSyntax.self) }
+                .flatMap { $0.segments.children(viewMode: .all) }
+                .compactMap { $0.as(StringSegmentSyntax.self) }
+                .flatMap { $0.tokens(viewMode: .all) }
+                .map(\.text)
+            _properties = arguments[arguments.startIndex..<macrosIndex]
+        } else {
+            _macros = nil
+            _properties = arguments.dropFirst()
+        }
+        let macros = _macros?.joined(separator: "\n") ?? ""
+
         guard _properties
             .map(\.expression)
             .allSatisfy({ $0.is(StringLiteralExprSyntax.self) }) else {
@@ -88,7 +104,7 @@ public struct OmitMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
             
-            let syntax = try StructDeclSyntax("\(access)struct \(name)", membersBuilder: {
+            let syntax = try StructDeclSyntax("\(raw: macros)\(access)struct \(name)", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
