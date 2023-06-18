@@ -10,7 +10,8 @@ public struct Item {
 @Partial
 @Required
 @Omit("Omitted", properties: "id")
-@Pick("Picked", properties: "id", "name", macros: #"@Required"#)
+@Pick("Picked", properties: "id", "name")
+@Pick("PickedNest", properties: "id", "name", macros: #"@Required"#, #"@Partial"#)
 public struct User {
     let id: UUID
     let name: String
@@ -22,7 +23,8 @@ let user = User(id: .init(), name: "bannzai", age: 30, optional: nil)
 let partial = User.Partial(id: nil, name: nil, age: nil, optional: nil)
 let required = User.Required(id: UUID(), name: "bannzai", age: 30, optional: ())
 let pickedUser = User.Picked(id: UUID(), name: "bannzai")
-let nestMacro = User.Picked.Required(id: .init(), name: "bannzai")
+let pickedNestMacroRequierd = User.PickedNest.Required(id: .init(), name: "bannzai")
+let pickedNestMacroPartial = User.PickedNest.Partial(id: .init(), name: "bannzai")
 let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
 
 @Exclude("ExcludedThree", exlcudes: "three")
