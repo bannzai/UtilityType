@@ -18,8 +18,8 @@ public struct PickMacro: MemberMacro {
             throw CustomError.message(#"@Pick requires the raw type and property names, in the form @Pick("PickTypeName", "id", "name")"#)
         }
         
-        var _properties: Slice<TupleExprElementListSyntax>
         let _macros: [String]?
+        var _properties: Slice<TupleExprElementListSyntax>
         if let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
             _macros = arguments[macrosIndex...]
                 .map(\.expression)
