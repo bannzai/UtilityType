@@ -9,8 +9,7 @@ public struct RequiredMacro: MemberMacro {
         in context: Context
     ) throws -> [DeclSyntax] where Declaration : DeclGroupSyntax, Context : MacroExpansionContext {
         let _macros: [String]?
-        if case .argumentList(let arguments) = node.argument, arguments.count >= 2,
-            let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
+        if case .argumentList(let arguments) = node.argument, let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
             _macros = arguments[macrosIndex...]
                 .map(\.expression)
                 .compactMap { $0.as(StringLiteralExprSyntax.self) }
