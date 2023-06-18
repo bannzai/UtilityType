@@ -4,7 +4,7 @@
 import Foundation
 
 @attached(member, names: arbitrary)
-public macro Pick(_ typename: String, properties: String..., macros: String? = nil) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
+public macro Pick(_ typename: String, properties: String..., macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
 
 @attached(member, names: arbitrary)
 public macro Omit(_ typename: String, properties: String...) = #externalMacro(module: "UtilityTypePlugin", type: "OmitMacro")
