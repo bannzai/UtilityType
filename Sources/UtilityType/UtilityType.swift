@@ -4,16 +4,16 @@
 import Foundation
 
 @attached(member, names: arbitrary)
-public macro Pick(_ typename: String, properties: String...) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
+public macro Pick(_ typename: String, properties: String..., macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "PickMacro")
 
 @attached(member, names: arbitrary)
-public macro Omit(_ typename: String, properties: String...) = #externalMacro(module: "UtilityTypePlugin", type: "OmitMacro")
+public macro Omit(_ typename: String, properties: String..., macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "OmitMacro")
 
 @attached(member, names: arbitrary)
-public macro Required() = #externalMacro(module: "UtilityTypePlugin", type: "RequiredMacro")
+public macro Required(macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "RequiredMacro")
 
 @attached(member, names: arbitrary)
-public macro Partial() = #externalMacro(module: "UtilityTypePlugin", type: "PartialMacro")
+public macro Partial(macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "PartialMacro")
 
 @attached(member, names: arbitrary)
 public macro Exclude(_ typename: String, exlcudes: String...) = #externalMacro(module: "UtilityTypePlugin", type: "ExcludeMacro")
@@ -25,4 +25,4 @@ public macro Extract(_ typename: String, extracts: String...) = #externalMacro(m
 public macro Parameters(_ typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "ParametersMacro")
 
 @attached(peer, names: arbitrary)
-public macro ReturnType(_ typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "ReturnTypeMacro")
+public macro ReturnType(_ typename: String, macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "ReturnTypeMacro")

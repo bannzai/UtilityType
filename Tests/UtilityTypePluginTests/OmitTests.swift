@@ -51,4 +51,54 @@ final class OmitTests: XCTestCase {
       """#
         )
     }
+
+    func testNestMacro() throws {
+        let sourceFile: SourceFileSyntax =
+      #"""
+      @Omit("Omitted", properties: "name", macros: #"@Required"#, #"@Partial"#, #"@Pick("Picked", properties: "id")"#)
+      public struct User {
+          let id: UUID
+          let name: String
+          let age: Int
+          let optional: Void?
+      }
+      """#
+        let context = BasicMacroExpansionContext.init(
+            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
+        )
+        let expanded = sourceFile.expand(macros: [
+            "Omit": OmitMacro.self
+        ], in: context)
+
+        XCTAssertEqual(
+            expanded.formatted().description,
+      #"""
+
+      public struct User {
+          let id: UUID
+          let name: String
+          let age: Int
+          let optional: Void?
+          @Required
+          @Partial
+          @Pick("Picked", properties: "id")
+          public struct Omitted {
+              public let id: UUID
+              public let age: Int
+              public let optional: Void?
+              public init(user: User) {
+                  self.id = user.id
+                  self.age = user.age
+                  self.optional = user.optional
+              }
+              public init(id: UUID, age: Int, optional: Void?) {
+                  self.id = id
+                  self.age = age
+                  self.optional = optional
+              }
+          }
+      }
+      """#
+        )
+    }
 }

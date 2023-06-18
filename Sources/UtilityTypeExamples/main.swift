@@ -1,10 +1,18 @@
 import Foundation
 import UtilityType
 
+@Pick("Picked", properties: "id")
+public struct Item {
+    let id: UUID
+    let name: String
+}
+
 @Partial
 @Required
-@Pick("Picked", properties: "id", "name")
 @Omit("Omitted", properties: "id")
+@Pick("Picked", properties: "id", "name")
+@Pick("PickedNest", properties: "id", "name", macros: #"@Required"#, #"@Partial"#, #"@Omit("Omitted", properties: "id")"#)
+@Omit("OmittedNest", properties: "name", macros: #"@Required"#, #"@Partial"#, #"@Pick("Picked", properties: "id")"#)
 public struct User {
     let id: UUID
     let name: String
@@ -16,6 +24,12 @@ let user = User(id: .init(), name: "bannzai", age: 30, optional: nil)
 let partial = User.Partial(id: nil, name: nil, age: nil, optional: nil)
 let required = User.Required(id: UUID(), name: "bannzai", age: 30, optional: ())
 let pickedUser = User.Picked(id: UUID(), name: "bannzai")
+let pickedNestRequierd = User.PickedNest.Required(id: .init(), name: "bannzai")
+let pickedNestPartial = User.PickedNest.Partial(id: .init(), name: "bannzai")
+let pickedNestOmit = User.PickedNest.Omitted(name: "bannzai")
+let omittedNestPartial = User.OmittedNest.Partial(id: nil, age: nil, optional: nil)
+let omittedNestRequired = User.OmittedNest.Required(id: UUID(), age: 30, optional: ())
+let omittedNestPick = User.OmittedNest.Picked(id: .init())
 let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
 
 @Exclude("ExcludedThree", exlcudes: "three")

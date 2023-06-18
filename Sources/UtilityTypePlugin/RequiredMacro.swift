@@ -8,6 +8,20 @@ public struct RequiredMacro: MemberMacro {
         providingMembersOf declaration: Declaration,
         in context: Context
     ) throws -> [DeclSyntax] where Declaration : DeclGroupSyntax, Context : MacroExpansionContext {
+        let _macros: [String]?
+        if case .argumentList(let arguments) = node.argument, let macrosIndex = arguments.firstIndex(where: { $0.label?.text == "macros"}) {
+            _macros = arguments[macrosIndex...]
+                .map(\.expression)
+                .compactMap { $0.as(StringLiteralExprSyntax.self) }
+                .flatMap { $0.segments.children(viewMode: .all) }
+                .compactMap { $0.as(StringSegmentSyntax.self) }
+                .flatMap { $0.tokens(viewMode: .all) }
+                .map(\.text)
+        } else {
+            _macros = nil
+        }
+        let macros = _macros?.joined(separator: "\n") ?? ""
+
         switch declaration.kind {
         case .structDecl:
             guard let declaration = declaration.as(StructDeclSyntax.self) else {
@@ -77,7 +91,7 @@ public struct RequiredMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
 
-            let syntax = try StructDeclSyntax("\(access)struct Required", membersBuilder: {
+            let syntax = try StructDeclSyntax("\(raw: macros)\(access)struct Required", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")

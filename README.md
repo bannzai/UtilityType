@@ -16,7 +16,7 @@ The UtilityTypes supported are as follows:
 
 UtilityType offers an extensive set of tools to enhance your flexibility and productivity when coding in Swift, by capitalizing on its robust type system. By exploiting the capabilities of Swift's Macro feature, we've succeeded in reproducing TypeScript's UtilityTypes, offering a more refined and sophisticated Swift programming experience. Experience the difference with UtilityType!
 
-## Partial
+### Partial
 Constructs a type with all properties of Type set to optional. This utility will return a type that represents all subsets of a given type.
 
 Example
@@ -39,7 +39,7 @@ let partialUser = User.Partial(user: user)
 
 ```
 
-## Required
+### Required
 Constructs a type consisting of all properties of Type set to required. The opposite of [Partial](./#Partial).
 
 Example
@@ -61,7 +61,7 @@ let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let partialUser = User.Partial(user: user)
 ```
 
-## Pick
+### Pick
 Constructs a type by picking the set of specific properties keys (only string literal) from attached Type.
 
 Example
@@ -83,7 +83,7 @@ let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let pickedUser = User.Picked(user: user)
 ```
 
-## Omit
+### Omit
 Constructs a type by picking all properties from Type and then removing specific properties (only string literal). The opposite of Pick.
 
 Example
@@ -105,7 +105,7 @@ let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let omittedUser = User.Omitted(user: user)
 ```
 
-## Exclude
+### Exclude
 Constructs a type by excluding from enum all cases that are assignable to `exlcudes`.
 
 Example
@@ -136,7 +136,7 @@ case nil:
 
 ```
 
-## Extract
+### Extract
 Constructs a type by extracting from enum all cases that are assignable to `extracts`.
 
 Example
@@ -163,7 +163,7 @@ case nil:
 
 ```
 
-## Parameters
+### Parameters
 Constructs a tuple type from the types used in the parameters of a function type.
 
 
@@ -180,7 +180,7 @@ let args: FunctionArgs = (a: 10, b: "value", c: { print("c") }, e: { print("e") 
 
 ```
 
-## ReturnType
+### ReturnType
 Constructs a type consisting of the return type of function.
 
 Example
@@ -192,7 +192,30 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
 }
 
 let returnType = FunctionReturnType(rawValue: 100)
+
 ```
 
+## UtilityType macro allow attached other macro that pass macro string literal to `macros:`.
+
+For example:
+
+```swift
+@Pick("PickedNest", properties: "id", "name", macros: #"@Required"#, #"@Partial"#, #"@Omit("Omitted", properties: "id")"#)
+@Omit("OmittedNest", properties: "name", macros: #"@Required"#, #"@Partial"#, #"@Pick("Picked", properties: "id")"#)
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+}
+
+let pickedNestRequierd = User.PickedNest.Required(id: UUID), name: "bannzai")
+let pickedNestPartial = User.PickedNest.Partial(id: UUID), name: "bannzai")
+let pickedNestOmit = User.PickedNest.Omitted(name: "bannzai")
+let omittedNestPartial = User.OmittedNest.Partial(id: nil, age: nil, optional: nil)
+let omittedNestRequired = User.OmittedNest.Required(id: UUID(), age: 30, optional: ())
+let omittedNestPick = User.OmittedNest.Picked(id: UUID())
+
+```
 ## LICENSE
 [Ocha](https://github.com/bannzai/UtilityType/) is released under the MIT license. See [LICENSE](./LICENSE) for details.
