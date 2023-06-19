@@ -219,4 +219,4 @@ let omittedNestPick = User.OmittedNest.Picked(id: UUID())
 
 ```
 ## LICENSE
-[Ocha](https://github.com/bannzai/UtilityType/) is released under the MIT license. See [LICENSE](./LICENSE) for details.
+[UtilityType](https://github.com/bannzai/UtilityType/) is released under the MIT license. See [LICENSE](./LICENSE) for details.
