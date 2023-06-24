@@ -44,22 +44,8 @@ public struct ReadonlyMacro: MemberMacro {
                 }
                 .flatMap { $0 }
 
-            let requiredStructProperties = structProperties
-                .map { _structProperty in
-                    var structProperty = _structProperty
-
-                    let propertyType = structProperty.typeAnnotation?.type
-                    if let propertyType, let optionalProperty = propertyType.as(OptionalTypeSyntax.self) {
-                        structProperty = structProperty.with(\.typeAnnotation!.type, optionalProperty.wrappedType)
-                    }
-
-                    return structProperty
-                }
-
-            let structRawProperties = requiredStructProperties
+            let structRawProperties = structProperties
                 .map { structProperty in
-                    let variableDecl = structProperty.parent!.parent!.cast(VariableDeclSyntax.self)
-                    let letOrVar = variableDecl.bindingKeyword.text
                     return "\(access)let \(structProperty)"
                 }
                 .joined()
@@ -69,20 +55,16 @@ public struct ReadonlyMacro: MemberMacro {
                         return nil
                     }
 
-                    if let structPropertyType = structProperty.typeAnnotation?.type, structPropertyType.is(OptionalTypeSyntax.self) {
-                        return (selfProperty: property, declarationProperty: property + "!")
-                    } else {
-                        return (selfProperty: property, declarationProperty: property)
-                    }
+                    return (selfProperty: property, declarationProperty: property)
                 }
                 .map { (selfProperty, declarationProperty) in
                     return "self.\(selfProperty) = \(structVariableName).\(declarationProperty)"
                 }
                 .joined(separator: "\n")
-            let eachInitArgument = requiredStructProperties
+            let eachInitArgument = structProperties
                 .map(\.description)
                 .joined(separator: ", ")
-            let assignedToSelfPropertyStatementsFromRawProperty = requiredStructProperties
+            let assignedToSelfPropertyStatementsFromRawProperty = structProperties
                 .compactMap { structProperty in
                     structProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
                 }
@@ -91,7 +73,7 @@ public struct ReadonlyMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
 
-            let syntax = try StructDeclSyntax("\(raw: macros)\(access)struct Required", membersBuilder: {
+            let syntax = try StructDeclSyntax("\(raw: macros)\(access)struct Readonly", membersBuilder: {
                 DeclSyntax("\(raw: structRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: structVariableName): \(raw: structName))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
@@ -122,23 +104,9 @@ public struct ReadonlyMacro: MemberMacro {
                 }
                 .flatMap { $0 }
 
-            let requiredClassProperties = classProperties
-                .map { _classProperty in
-                    var classProperty = _classProperty
-
-                    let propertyType = classProperty.typeAnnotation?.type
-                    if let propertyType, let optionalProperty = propertyType.as(OptionalTypeSyntax.self) {
-                        classProperty = classProperty.with(\.typeAnnotation!.type, optionalProperty.wrappedType)
-                    }
-
-                    return classProperty
-                }
-
-            let classRawProperties = requiredClassProperties
+            let classRawProperties = classProperties
                 .map { classProperty in
-                    let variableDecl = classProperty.parent!.parent!.cast(VariableDeclSyntax.self)
-                    let letOrVar = variableDecl.bindingKeyword.text
-                    return "\(access)\(letOrVar.trimmingPrefix(while: \.isWhitespace)) \(classProperty)"
+                    return "\(access)let \(classProperty)"
                 }
                 .joined()
             let assignedToSelfPropertyStatementsFromDeclaration = classProperties
@@ -147,20 +115,16 @@ public struct ReadonlyMacro: MemberMacro {
                         return nil
                     }
 
-                    if let classPropertyType = classProperty.typeAnnotation?.type, classPropertyType.is(OptionalTypeSyntax.self) {
-                        return (selfProperty: property, declarationProperty: property + "!")
-                    } else {
-                        return (selfProperty: property, declarationProperty: property)
-                    }
+                    return (selfProperty: property, declarationProperty: property)
                 }
                 .map { (selfProperty, declarationProperty) in
                     return "self.\(selfProperty) = \(classVariableName).\(declarationProperty)"
                 }
                 .joined(separator: "\n")
-            let eachInitArgument = requiredClassProperties
+            let eachInitArgument = classProperties
                 .map(\.description)
                 .joined(separator: ", ")
-            let assignedToSelfPropertyStatementsFromRawProperty = requiredClassProperties
+            let assignedToSelfPropertyStatementsFromRawProperty = classProperties
                 .compactMap { classProperty in
                     classProperty.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
                 }
@@ -169,7 +133,7 @@ public struct ReadonlyMacro: MemberMacro {
                 }
                 .joined(separator: "\n")
 
-            let syntax = try ClassDeclSyntax("\(access)class Required", membersBuilder: {
+            let syntax = try ClassDeclSyntax("\(access)class Readonly", membersBuilder: {
                 DeclSyntax("\(raw: classRawProperties)")
                 try InitializerDeclSyntax("\(access)init(\(raw: classVariableName): \(raw: className))") {
                     DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
