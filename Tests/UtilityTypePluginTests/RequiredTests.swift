@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class RequiredTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Required
       public struct User {
@@ -15,16 +16,8 @@ final class RequiredTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Required": RequiredMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -51,7 +44,8 @@ final class RequiredTests: XCTestCase {
               }
           }
       }
-      """#
+      """#,
+      macros:  ["Required": RequiredMacro.self]
         )
     }
 
