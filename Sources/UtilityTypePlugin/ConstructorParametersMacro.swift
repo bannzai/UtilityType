@@ -60,11 +60,11 @@ public struct ConstructorParametersMacro: PeerMacro {
         let variableName = nameText.prefix(1).lowercased() + nameText.suffix(nameText.count - 1)
         let assignedToSelfPropertyStatementsFromDeclaration = parameters
             .map(\.firstName.text)
-            .map { "self.\($0) = \(variableName).\($0)" }
-            .joined(separator: "\n")
+            .map { "\($0): \(variableName).\($0)" }
+            .joined(separator: ", ")
 
         let initFunc = try InitializerDeclSyntax("\(access)init(\(raw: variableName): \(raw: nameText))") {
-            DeclSyntax("\(raw: assignedToSelfPropertyStatementsFromDeclaration)")
+            DeclSyntax("self.init(\(raw: assignedToSelfPropertyStatementsFromDeclaration))")
         }
 
         return try [initParams.tryCast(DeclSyntax.self), initFunc.tryCast(DeclSyntax.self)]
