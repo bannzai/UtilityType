@@ -13,6 +13,7 @@ struct UtilityTypePlugin: CompilerPlugin {
         ExcludeMacro.self,
         ParametersMacro.self,
         ReturnTypeMacro.self,
+        ConstructorParametersMacro.self,
         ReadonlyMacro.self,
     ]
 }

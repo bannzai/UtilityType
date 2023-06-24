@@ -2,7 +2,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxBuilder
 
-public struct ParametersMacro: PeerMacro {
+public struct ConstructorParametersMacro: PeerMacro {
     public static func expansion<Context, Declaration>(
         of node: AttributeSyntax,
         providingPeersOf declaration: Declaration,
@@ -14,16 +14,16 @@ public struct ParametersMacro: PeerMacro {
             string.segments.count == 1,
             let name = string.segments.first 
         else {
-            throw CustomError.message(#"@Parameters requires the type name, in the form @Parameters("TypeName")"#)
+            throw CustomError.message(#"@ConstructorParameters requires the type name, in the form @ConstructorParameters("TypeName")"#)
         }
 
-        guard let funcDecl = declaration.as(FunctionDeclSyntax.self) else {
-            throw CustomError.message("@Parameters should attach to `function`)")
+        guard let initDecl = declaration.as(InitializerDeclSyntax.self) else {
+            throw CustomError.message("@ConstructorParameters should attach to `function`)")
         }
 
-        let access = funcDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
+        let access = initDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
 
-        let parameters = funcDecl.signature.input.parameterList.children(viewMode: .all)
+        let parameters = initDecl.signature.input.parameterList.children(viewMode: .all)
             .compactMap { $0.as(FunctionParameterSyntax.self) }
             .map { functionParameter in
                 if let attributedFunctionParameter = functionParameter.type.as(AttributedTypeSyntax.self) {
@@ -37,9 +37,10 @@ public struct ParametersMacro: PeerMacro {
                 }
             }
 
-        return [try TypealiasDeclSyntax(
+        let nameText = try name.text
+        let initParams = TypealiasDeclSyntax(
             modifiers: ModifierListSyntax(access != nil ? [access!] : []),
-            identifier: TokenSyntax(stringLiteral: try name.text),
+            identifier: TokenSyntax(stringLiteral: nameText),
             initializer: TypeInitializerClauseSyntax(
                 value:
                     TupleTypeSyntax(
@@ -54,6 +55,18 @@ public struct ParametersMacro: PeerMacro {
                         })
                     )
             )
-        ).tryCast(DeclSyntax.self)]
+        )
+
+        let variableName = nameText.prefix(1).lowercased() + nameText.suffix(nameText.count - 1)
+        let assignedToSelfPropertyStatementsFromDeclaration = parameters
+            .map(\.firstName.text)
+            .map { "\($0): \(variableName).\($0)" }
+            .joined(separator: ", ")
+
+        let initFunc = try InitializerDeclSyntax("\(access)init(\(raw: variableName): \(raw: nameText))") {
+            DeclSyntax("self.init(\(raw: assignedToSelfPropertyStatementsFromDeclaration))")
+        }
+
+        return try [initParams.tryCast(DeclSyntax.self), initFunc.tryCast(DeclSyntax.self)]
     }
 }
