@@ -29,3 +29,4 @@ public macro ReturnType(_ typename: String, macros: String... = []) = #externalM
 
 @attached(member, names: arbitrary)
 public macro Readonly(macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "ReadonlyMacro")
+

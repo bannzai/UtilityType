@@ -14,6 +14,7 @@ struct UtilityTypePlugin: CompilerPlugin {
         ParametersMacro.self,
         ReturnTypeMacro.self,
         ReadonlyMacro.self,
+        ConstructorParametersMacro.self,
     ]
 }
 #endif
