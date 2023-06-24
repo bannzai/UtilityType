@@ -14,7 +14,7 @@ public struct ParametersMacro: PeerMacro {
             string.segments.count == 1,
             let name = string.segments.first 
         else {
-            throw CustomError.message(#"@Parameters requires the type name, in the form @Parameters("PickTypeName")"#)
+            throw CustomError.message(#"@Parameters requires the type name, in the form @Parameters("TypeName")"#)
         }
 
         guard let funcDecl = declaration.as(FunctionDeclSyntax.self) else {
