@@ -19,6 +19,14 @@ public struct User {
     let name: String
     let age: Int
     let optional: Void?
+
+    @ConstructorParameters("InitValue")
+    init(id: UUID, name: String, age: Int, optional: Void?) {
+        self.id = id
+        self.name = name
+        self.age = age
+        self.optional = optional
+    }
 }
 
 let user = User(id: .init(), name: "bannzai", age: 30, optional: nil)
