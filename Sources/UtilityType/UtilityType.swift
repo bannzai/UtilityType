@@ -27,6 +27,8 @@ public macro Parameters(_ typename: String) = #externalMacro(module: "UtilityTyp
 @attached(peer, names: arbitrary)
 public macro ReturnType(_ typename: String, macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "ReturnTypeMacro")
 
+@attached(peer, names: arbitrary)
+public macro ConstructorParameters(_ typename: String) = #externalMacro(module: "UtilityTypePlugin", type: "ConstructorParametersMacro")
+
 @attached(member, names: arbitrary)
 public macro Readonly(macros: String... = []) = #externalMacro(module: "UtilityTypePlugin", type: "ReadonlyMacro")
-
