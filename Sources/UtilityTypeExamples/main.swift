@@ -9,6 +9,7 @@ public struct Item {
 
 @Partial
 @Required
+@Readonly
 @Omit("Omitted", properties: "id")
 @Pick("Picked", properties: "id", "name")
 @Pick("PickedNest", properties: "id", "name", macros: #"@Required"#, #"@Partial"#, #"@Omit("Omitted", properties: "id")"#)
