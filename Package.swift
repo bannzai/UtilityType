@@ -39,7 +39,10 @@ let package = Package(
         ),
         .testTarget(
             name: "UtilityTypePluginTests",
-            dependencies: ["UtilityTypePlugin"]
+            dependencies: [
+                "UtilityTypePlugin",
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ]
         ),
         .executableTarget(
             name: "UtilityTypeExamples",
