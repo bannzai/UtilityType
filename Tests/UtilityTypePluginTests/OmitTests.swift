@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class OmitTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Omit("Omitted", properties: "id")
       public struct User {
@@ -15,16 +16,8 @@ final class OmitTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Omit": OmitMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -48,12 +41,13 @@ final class OmitTests: XCTestCase {
               }
           }
       }
-      """#
+      """#,
+      macros: ["Omit": OmitMacro.self]
         )
     }
 
     func testNestMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Omit("Omitted", properties: "name", macros: #"@Required"#, #"@Partial"#, #"@Pick("Picked", properties: "id")"#)
       public struct User {
@@ -62,16 +56,8 @@ final class OmitTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Omit": OmitMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -98,7 +84,8 @@ final class OmitTests: XCTestCase {
               }
           }
       }
-      """#
+      """#,
+      macros: ["Omit": OmitMacro.self]
         )
     }
 }
