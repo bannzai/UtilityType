@@ -61,6 +61,24 @@ let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let partialUser = User.Partial(user: user)
 ```
 
+### Readonly
+Constructs a type with all properties of Type set to readonly, meaning the properties of the constructed type cannot be modify.
+
+Example
+
+```swift
+@Readonly
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    var optional: Void?
+}
+
+let readOnlyUser = User.Readonly(id: UUID(), name: "bannzai", age: 30, optional: nil)
+
+```
+
 ### Pick
 Constructs a type by picking the set of specific properties keys (only string literal) from attached Type.
 
