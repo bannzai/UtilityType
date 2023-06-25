@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class PickTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Pick("Pickted", properties: "id", "name")
       public struct User {
@@ -15,16 +16,8 @@ final class PickTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Pick": PickMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -45,12 +38,13 @@ final class PickTests: XCTestCase {
               }
           }
       }
-      """#
+      """#,
+      macros: ["Pick": PickMacro.self]
         )
     }
 
     func testNestMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Pick("PickedNest", properties: "id", "name", macros: #"@Required"#, #"@Partial"#, #"@Omit("Omitted", properties: "id")"#)
       public struct User {
@@ -59,16 +53,8 @@ final class PickTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Pick": PickMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -92,7 +78,8 @@ final class PickTests: XCTestCase {
               }
           }
       }
-      """#
+      """#,
+      macros: ["Pick": PickMacro.self]
         )
     }
 }

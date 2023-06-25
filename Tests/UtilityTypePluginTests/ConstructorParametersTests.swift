@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class ConstructorParametersTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       public struct User {
           let id: UUID
@@ -22,16 +23,8 @@ final class ConstructorParametersTests: XCTestCase {
               self.optional = optional
           }
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "ConstructorParameters": ConstructorParametersMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
       public struct User {
           let id: UUID
@@ -49,7 +42,8 @@ final class ConstructorParametersTests: XCTestCase {
               self.init(id: initValue.id, name: initValue.name, age: initValue.age, optional: initValue.optional)
           }
       }
-      """#
+      """#,
+      macros: ["ConstructorParameters": ConstructorParametersMacro.self]
         )
     }
 }
