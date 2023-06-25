@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class PartialTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Partial
       public struct User {
@@ -15,16 +16,8 @@ final class PartialTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Partial": PartialMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -51,12 +44,13 @@ final class PartialTests: XCTestCase {
               }
           }
       }
-      """#
+      """#,
+      macros: ["Partial": PartialMacro.self]
         )
     }
 
     func testMacroNest() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Partial(macros: #"@Pick("Picked", properties: "id")"#)
       public struct User {
@@ -65,16 +59,8 @@ final class PartialTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Partial": PartialMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -102,7 +88,8 @@ final class PartialTests: XCTestCase {
               }
           }
       }
-      """#
+      """#,
+      macros: ["Partial": PartialMacro.self]
         )
     }
 }
