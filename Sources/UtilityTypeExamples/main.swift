@@ -18,7 +18,7 @@ public struct User {
     let id: UUID
     let name: String
     let age: Int
-    let optional: Void?
+    var optional: Void?
 
     @ConstructorParameters("InitValue")
     init(id: UUID, name: String, age: Int, optional: Void?) {
@@ -40,6 +40,9 @@ let omittedNestPartial = User.OmittedNest.Partial(id: nil, age: nil, optional: n
 let omittedNestRequired = User.OmittedNest.Required(id: UUID(), age: 30, optional: ())
 let omittedNestPick = User.OmittedNest.Picked(id: .init())
 let omittedUser = User.Omitted(name: "bannzai", age: 30, optional: nil)
+let initValue: User.InitValue = (id: UUID(), name: "bannzai", age: 30, optional: nil)
+let userFromConstructorParameters = User(initValue: initValue)
+let readOnlyUser = User.Readonly(id: UUID(), name: "bannzai", age: 30, optional: nil)
 
 @Exclude("ExcludedThree", exlcudes: "three")
 @Extract("ExtractedOne", extracts: "one")
