@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class ReadonlyTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Readonly
       public struct User {
@@ -15,16 +16,8 @@ final class ReadonlyTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Readonly": ReadonlyMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -51,12 +44,12 @@ final class ReadonlyTests: XCTestCase {
               }
           }
       }
-      """#
-        )
+      """#,
+      macros: ["Readonly": ReadonlyMacro.self])
     }
 
     func testMacroNest() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Readonly(macros: #"@Pick("Picked", properties: "id")"#)
       public struct User {
@@ -65,16 +58,8 @@ final class ReadonlyTests: XCTestCase {
           let age: Int
           let optional: Void?
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Readonly": ReadonlyMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public struct User {
@@ -102,7 +87,7 @@ final class ReadonlyTests: XCTestCase {
               }
           }
       }
-      """#
-        )
+      """#,
+      macros: ["Readonly": ReadonlyMacro.self])
     }
 }
