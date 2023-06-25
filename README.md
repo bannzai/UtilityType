@@ -61,6 +61,24 @@ let user = User(id: UUID(), name: "bannzai", age: 30, optional: ())
 let partialUser = User.Partial(user: user)
 ```
 
+### Readonly
+Constructs a type with all properties of Type set to readonly, meaning the properties of the constructed type cannot be modify.
+
+Example
+
+```swift
+@Readonly
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    var optional: Void?
+}
+
+let readOnlyUser = User.Readonly(id: UUID(), name: "bannzai", age: 30, optional: nil)
+
+```
+
 ### Pick
 Constructs a type by picking the set of specific properties keys (only string literal) from attached Type.
 
@@ -194,6 +212,33 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
 let returnType = FunctionReturnType(rawValue: 100)
 
 ```
+
+### ConstructorParameters
+Constructs a tuple or array type from the types of a constructor. It produces a tuple type with all the parameter types
+
+Example
+
+```swift
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+
+    @ConstructorParameters("InitValue")
+    init(id: UUID, name: String, age: Int, optional: Void?) {
+        self.id = id
+        self.name = name
+        self.age = age
+        self.optional = optional
+    }
+}
+
+let initValue: User.InitValue = (id: UUID(), name: "bannzai", age: 30, optional: nil)
+let userFromConstructorParameters = User(initValue: initValue)
+
+```
+
 
 ## Nested Macro
 **UtilityType** macro allow attached other macro that pass macro string literal to `macros:`.
