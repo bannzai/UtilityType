@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class ExcludeTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Exclude("ExcludedThree", exlcudes: "three")
       public enum E {
@@ -15,16 +16,8 @@ final class ExcludeTests: XCTestCase {
           case three(String, Int)
           case four(a: String, b: Int)
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Exclude": ExcludeMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public enum E {
@@ -50,7 +43,9 @@ final class ExcludeTests: XCTestCase {
               }
           }
       }
-      """#
-        )
+      """#,
+      macros: [
+        "Exclude": ExcludeMacro.self
+      ])
     }
 }
