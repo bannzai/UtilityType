@@ -213,6 +213,33 @@ let returnType = FunctionReturnType(rawValue: 100)
 
 ```
 
+### ConstructorParameters
+Constructs a tuple or array type from the types of a constructor. It produces a tuple type with all the parameter types
+
+Example
+
+```swift
+public struct User {
+    let id: UUID
+    let name: String
+    let age: Int
+    let optional: Void?
+
+    @ConstructorParameters("InitValue")
+    init(id: UUID, name: String, age: Int, optional: Void?) {
+        self.id = id
+        self.name = name
+        self.age = age
+        self.optional = optional
+    }
+}
+
+let initValue: User.InitValue = (id: UUID(), name: "bannzai", age: 30, optional: nil)
+let userFromConstructorParameters = User(initValue: initValue)
+
+```
+
+
 ## Nested Macro
 **UtilityType** macro allow attached other macro that pass macro string literal to `macros:`.
 
