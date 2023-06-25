@@ -2,11 +2,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import UtilityTypePlugin
+import SwiftSyntaxMacrosTestSupport
 import XCTest
 
 final class ExtractTests: XCTestCase {
     func testMacro() throws {
-        let sourceFile: SourceFileSyntax =
+        assertMacroExpansion(
       #"""
       @Extract("ExtractedOne", exlcudes: "one")
       public enum E {
@@ -15,16 +16,8 @@ final class ExtractTests: XCTestCase {
           case three(String, Int)
           case four(a: String, b: Int)
       }
-      """#
-        let context = BasicMacroExpansionContext.init(
-            sourceFiles: [sourceFile: .init(moduleName: "MyModule", fullFilePath: "test.swift")]
-        )
-        let expanded = sourceFile.expand(macros: [
-            "Extract": ExtractMacro.self
-        ], in: context)
-
-        XCTAssertEqual(
-            expanded.formatted().description,
+      """#,
+      expandedSource:
       #"""
 
       public enum E {
@@ -44,7 +37,9 @@ final class ExtractTests: XCTestCase {
               }
           }
       }
-      """#
-        )
+      """#,
+      macros: [
+        "Extract": ExtractMacro.self
+      ])
     }
 }
