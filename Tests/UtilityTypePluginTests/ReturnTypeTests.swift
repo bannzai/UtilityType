@@ -23,7 +23,7 @@ final class ReturnTypeTests: XCTestCase {
       struct FunctionReturnType {
           typealias RawValue = Int
           let rawValue: RawValue
-          init(rawValue: RawValue) {
+          init(_ rawValue: RawValue) {
               self.rawValue = rawValue
           }
       }
@@ -50,7 +50,7 @@ final class ReturnTypeTests: XCTestCase {
       struct FunctionReturnType {
           typealias RawValue = Int
           let rawValue: RawValue
-          init(rawValue: RawValue) {
+          init(_ rawValue: RawValue) {
               self.rawValue = rawValue
           }
       }
