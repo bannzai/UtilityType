@@ -16,10 +16,7 @@ let package = Package(
             targets: ["UtilityType"]),
     ],
     dependencies: [
-        .package(
-          url: "https://github.com/apple/swift-syntax.git",
-          from: "509.0.0-swift-DEVELOPMENT-SNAPSHOT-2023-06-05-a"
-        ),
+      .package(url: "https://github.com/apple/swift-syntax.git", from: "509.1.1"),
     ],
     targets: [
         .macro(
