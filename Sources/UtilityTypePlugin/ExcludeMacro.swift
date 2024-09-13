@@ -37,7 +37,7 @@ public struct ExcludeMacro: MemberMacro {
         }
 
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
-        let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
+        let access = enumDecl.modifiers.first(where: \.isNeededAccessLevelModifier)
         let excludedCases = enumDecl.cases.filter { enumCase in
             !cases.contains { c in enumCase.identifier.text == c }
         }

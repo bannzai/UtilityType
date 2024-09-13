@@ -34,7 +34,7 @@ public struct ReturnTypeMacro: PeerMacro {
         }
         let macros = _macros?.joined(separator: "\n") ?? ""
 
-        let access = funcDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
+        let access = funcDecl.modifiers.first(where: \.isNeededAccessLevelModifier)
         let returnType = funcDecl.signature.output?.returnType ?? TypeSyntax(stringLiteral: "Void")
         return [try StructDeclSyntax("\(raw: macros)\n\(access)struct \(name)") {
             DeclSyntax("\(access)\(raw: "typealias RawValue = \(returnType)")")

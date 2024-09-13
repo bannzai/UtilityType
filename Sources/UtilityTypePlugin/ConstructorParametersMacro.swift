@@ -21,7 +21,7 @@ public struct ConstructorParametersMacro: PeerMacro {
             throw CustomError.message("@ConstructorParameters should attach to `function`)")
         }
 
-        let access = initDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
+        let access = initDecl.modifiers.first(where: \.isNeededAccessLevelModifier)
 
         let parameters = initDecl.signature.input.parameterList.children(viewMode: .all)
             .compactMap { $0.as(FunctionParameterSyntax.self) }

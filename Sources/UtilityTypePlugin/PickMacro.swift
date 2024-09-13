@@ -58,7 +58,7 @@ public struct PickMacro: MemberMacro {
             let structName = declaration.identifier.text
             let structVariableName = structName.prefix(1).lowercased() + structName.suffix(structName.count - 1)
             
-            let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
+            let access = declaration.modifiers.first(where: \.isNeededAccessLevelModifier)
             let structProperties = declaration.memberBlock.members.children(viewMode: .all)
                 .compactMap { $0.as(MemberDeclListItemSyntax.self) }
                 .compactMap { $0.decl.as(VariableDeclSyntax.self) }
@@ -123,7 +123,7 @@ public struct PickMacro: MemberMacro {
             let className = declaration.identifier.text
             let classVariableName = className.prefix(1).lowercased() + className.suffix(className.count - 1)
             
-            let access = declaration.modifiers?.first(where: \.isNeededAccessLevelModifier)
+            let access = declaration.modifiers.first(where: \.isNeededAccessLevelModifier)
             let classProperties = declaration.memberBlock.members.children(viewMode: .all)
                 .compactMap { $0.as(MemberDeclListItemSyntax.self) }
                 .compactMap { $0.decl.as(VariableDeclSyntax.self) }
