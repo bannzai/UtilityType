@@ -144,7 +144,7 @@ public struct ExcludeMacro: MemberMacro {
                                                                         ),
                                                                         rightParen: ")"
                                                                     )
-                                                                ]
+                                                                ].map(ExprSyntax.init)
                                                             )
                                                         ).tryCast(ExprSyntax.self)
                                                     )
@@ -161,7 +161,7 @@ public struct ExcludeMacro: MemberMacro {
                                                                     MemberAccessExprSyntax(
                                                                         name: identifier
                                                                     )
-                                                                ]
+                                                                ].map(ExprSyntax.init)
                                                             )
                                                         ).tryCast(ExprSyntax.self)
                                                     )
