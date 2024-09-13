@@ -144,7 +144,7 @@ public struct ExcludeMacro: MemberMacro {
                                                                         ),
                                                                         rightParen: ")"
                                                                     )
-                                                                ]
+                                                                ].map(ExprSyntax.init)
                                                             )
                                                         ).tryCast(ExprSyntax.self)
                                                     )
@@ -156,12 +156,12 @@ public struct ExcludeMacro: MemberMacro {
                                                         try SequenceExprSyntax(
                                                             elements: ExprListSyntax(
                                                                 [
-                                                                    IdentifierExprSyntax(identifier: .init(stringLiteral: "self")),
-                                                                    AssignmentExprSyntax(),
-                                                                    MemberAccessExprSyntax(
-                                                                        name: identifier
-                                                                    )
-                                                                ]
+                                                                  IdentifierExprSyntax(identifier: .init(stringLiteral: "self")),
+                                                                  AssignmentExprSyntax(),
+                                                                  MemberAccessExprSyntax(
+                                                                    name: identifier
+                                                                  )
+                                                                ].map(ExprSyntax.init)
                                                             )
                                                         ).tryCast(ExprSyntax.self)
                                                     )
@@ -170,20 +170,7 @@ public struct ExcludeMacro: MemberMacro {
                                         })
                                     )
                                 )
-                            } + [
-                                SyntaxEnum.switchCase(
-                                    try SwitchCaseSyntax(
-                                        label: .default(.init()),
-                                        statements: CodeBlockItemListSyntax([
-                                            CodeBlockItemSyntax(
-                                                item: .stmt(ReturnStmtSyntax(
-                                                    expression: NilLiteralExprSyntax()
-                                                ).tryCast(StmtSyntax.self))
-                                            )
-                                        ])
-                                    )
-                                )
-                            ])
+                            })
                         }
                     }
                 }
