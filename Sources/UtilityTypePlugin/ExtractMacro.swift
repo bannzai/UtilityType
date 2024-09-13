@@ -171,7 +171,7 @@ public struct ExtractMacro: MemberMacro {
                                     )
                                 )
                             } + [
-                              SyntaxEnum.switchCase(
+                              .switchCase(
                                     try SwitchCaseSyntax(
                                         label: .default(.init()),
                                         statements: CodeBlockItemListSyntax([
