@@ -209,7 +209,7 @@ func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int 
     return 1
 }
 
-let returnType = FunctionReturnType(rawValue: 100)
+let returnType = FunctionReturnType(_ rawValue: 100)
 
 ```
 

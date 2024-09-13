@@ -37,7 +37,7 @@ public struct ExtractMacro: MemberMacro {
         }
 
         let typeName = enumDecl.identifier.with(\.trailingTrivia, [])
-        let access = enumDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
+        let access = enumDecl.modifiers.first(where: \.isNeededAccessLevelModifier)
         let extractdCases = enumDecl.cases.filter { enumCase in
             cases.contains { c in enumCase.identifier.text == c }
         }
@@ -144,7 +144,7 @@ public struct ExtractMacro: MemberMacro {
                                                                         ),
                                                                         rightParen: ")"
                                                                     )
-                                                                ]
+                                                                ].map(ExprSyntax.init)
                                                             )
                                                         ).tryCast(ExprSyntax.self)
                                                     )
@@ -161,7 +161,7 @@ public struct ExtractMacro: MemberMacro {
                                                                     MemberAccessExprSyntax(
                                                                         name: identifier
                                                                     )
-                                                                ]
+                                                                ].map(ExprSyntax.init)
                                                             )
                                                         ).tryCast(ExprSyntax.self)
                                                     )
@@ -171,7 +171,7 @@ public struct ExtractMacro: MemberMacro {
                                     )
                                 )
                             } + [
-                                .switchCase(
+                              .switchCase(
                                     try SwitchCaseSyntax(
                                         label: .default(.init()),
                                         statements: CodeBlockItemListSyntax([

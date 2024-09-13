@@ -34,12 +34,12 @@ public struct ReturnTypeMacro: PeerMacro {
         }
         let macros = _macros?.joined(separator: "\n") ?? ""
 
-        let access = funcDecl.modifiers?.first(where: \.isNeededAccessLevelModifier)
+        let access = funcDecl.modifiers.first(where: \.isNeededAccessLevelModifier)
         let returnType = funcDecl.signature.output?.returnType ?? TypeSyntax(stringLiteral: "Void")
         return [try StructDeclSyntax("\(raw: macros)\n\(access)struct \(name)") {
             DeclSyntax("\(access)\(raw: "typealias RawValue = \(returnType)")")
             DeclSyntax("\(access)\(raw: "let rawValue: RawValue")")
-            try InitializerDeclSyntax("\(access)init(\(raw: "rawValue: RawValue"))", bodyBuilder: {
+            try InitializerDeclSyntax("\(access)init(\(raw: "_ rawValue: RawValue"))", bodyBuilder: {
                 DeclSyntax("\(raw: "self.rawValue = rawValue")")
             })
         }.tryCast(DeclSyntax.self)]
