@@ -77,11 +77,13 @@ case nil:
     print("nil")
 }
 
-@Parameters("FunctionArgs")
-@ReturnType("FunctionReturnType")
-func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int {
+enum Scope {
+  @Parameters("FunctionArgs")
+  @ReturnType("FunctionReturnType")
+  func function(a: Int, b: String, c: @escaping () -> Void, e: () -> Void) -> Int {
     return 1
+  }
 }
 
-let returnType = FunctionReturnType(rawValue: 100)
-let args: FunctionArgs = (a: 10, b: "value", c: { print("c") }, e: { print("e") })
+let returnType = Scope.FunctionReturnType(100)
+let args: Scope.FunctionArgs = (a: 10, b: "value", c: { print("c") }, e: { print("e") })
