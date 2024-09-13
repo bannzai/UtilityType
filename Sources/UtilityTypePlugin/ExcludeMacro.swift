@@ -42,7 +42,7 @@ public struct ExcludeMacro: MemberMacro {
             !cases.contains { c in enumCase.identifier.text == c }
         }
 
-        let syntax = try EnumDeclSyntax(
+      let syntax = try EnumDeclSyntax(
             "\(access)enum \(name)",
             membersBuilder: {
                 // case .one(Int)
@@ -171,7 +171,7 @@ public struct ExcludeMacro: MemberMacro {
                                     )
                                 )
                             } + [
-                                .switchCase(
+                                SyntaxEnum.switchCase(
                                     try SwitchCaseSyntax(
                                         label: .default(.init()),
                                         statements: CodeBlockItemListSyntax([
